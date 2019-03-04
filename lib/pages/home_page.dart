@@ -36,11 +36,13 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
             String bannerUrl = data['data']['advertesPicture']['PICTURE_ADDRESS'];
             String leaderImage = data['data']['shopInfo']['leaderImage'];
             String phone = data['data']['shopInfo']['leaderPhone'];
+            List<Map> recommendLists = (data['data']['recommend'] as List).cast();
             return CustomScrollView(physics: BouncingScrollPhysics(), slivers: <Widget>[
               BannerDiy(bannerImages: bannerImages),
               TopNavigatorBar(categories: categories),
               AdBanner(bannerUrl: bannerUrl),
               LeaderPhone(imageUrl: leaderImage, phone: phone),
+              RecommendWidget(recommendList: recommendLists),
             ]);
           } else {
             return Center(child: Text('Loading...'));
@@ -141,5 +143,56 @@ class LeaderPhone extends StatelessWidget {
                   else
                     print('url error');
                 })));
+  }
+}
+
+class RecommendWidget extends StatelessWidget {
+  final List recommendList;
+
+  RecommendWidget({Key key, @required this.recommendList}) : super(key: key);
+
+  Widget _recommendTitle() {
+    return Container(
+      alignment: Alignment.centerLeft,
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.black12, width: 1.0))),
+      child: Text('商品推荐', style: TextStyle(color: Colors.pink)),
+    );
+  }
+
+  Widget _recommendItem(BuildContext context, int index) {
+    return InkWell(
+        onTap: () {},
+        child: Container(
+          width: ScreenUtil().setWidth(250),
+          height: ScreenUtil().setHeight(330),
+          decoration: BoxDecoration(border: Border(left: BorderSide(color: Colors.black12))),
+          child: Column(children: <Widget>[
+            Image.network(recommendList[index]['image'], height: ScreenUtil().setHeight(220)),
+            Text('￥${recommendList[index]['mallPrice']}'),
+            Text('￥${recommendList[index]['price']}',
+                style: TextStyle(
+                    decoration: TextDecoration.lineThrough,
+                    decorationStyle: TextDecorationStyle.double,
+                    decorationColor: Colors.red))
+          ]),
+        ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverToBoxAdapter(
+        child: Container(
+            margin: const EdgeInsets.only(top: 6.0),
+            child: Column(children: <Widget>[
+              _recommendTitle(),
+              Container(
+                height: ScreenUtil().setHeight(300),
+                child: ListView.builder(
+                    itemBuilder: _recommendItem,
+                    itemCount: this.recommendList.length,
+                    scrollDirection: Axis.horizontal),
+              )
+            ])));
   }
 }

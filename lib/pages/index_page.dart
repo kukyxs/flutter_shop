@@ -39,7 +39,7 @@ class _IndexPageState extends State<IndexPage> {
 
     return Scaffold(
       backgroundColor: Color.fromRGBO(244, 245, 245, 1.0),
-      body: _tabPages[_currentPageIndex],
+      body: IndexedStack(index: _currentPageIndex, children: _tabPages),
       bottomNavigationBar: BottomNavigationBar(
         items: _bottomTabs,
         type: BottomNavigationBarType.fixed,
