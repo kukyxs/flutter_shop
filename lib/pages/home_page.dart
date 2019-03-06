@@ -24,9 +24,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('百姓生活家'),
-      ),
+      appBar: AppBar(title: Text('百姓生活+'), centerTitle: true),
       body: FutureBuilder(
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -37,12 +35,25 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
             String leaderImage = data['data']['shopInfo']['leaderImage'];
             String phone = data['data']['shopInfo']['leaderPhone'];
             List<Map> recommendLists = (data['data']['recommend'] as List).cast();
+            String floor1Pic = data['data']['floor1Pic']['PICTURE_ADDRESS'];
+            List<Map> floor1 = (data['data']['floor1'] as List).cast();
+            String floor2Pic = data['data']['floor2Pic']['PICTURE_ADDRESS'];
+            List<Map> floor2 = (data['data']['floor2'] as List).cast();
+            String floor3Pic = data['data']['floor3Pic']['PICTURE_ADDRESS'];
+            List<Map> floor3 = (data['data']['floor3'] as List).cast();
+
             return CustomScrollView(physics: BouncingScrollPhysics(), slivers: <Widget>[
               BannerDiy(bannerImages: bannerImages),
               TopNavigatorBar(categories: categories),
               AdBanner(bannerUrl: bannerUrl),
               LeaderPhone(imageUrl: leaderImage, phone: phone),
               RecommendWidget(recommendList: recommendLists),
+              FloorTitle(floorPic: floor1Pic),
+              FloorContent(floorContent: floor1),
+              FloorTitle(floorPic: floor2Pic),
+              FloorContent(floorContent: floor2),
+              FloorTitle(floorPic: floor3Pic),
+              FloorContent(floorContent: floor3),
             ]);
           } else {
             return Center(child: Text('Loading...'));
@@ -166,7 +177,7 @@ class RecommendWidget extends StatelessWidget {
         child: Container(
           width: ScreenUtil().setWidth(250),
           height: ScreenUtil().setHeight(330),
-          decoration: BoxDecoration(border: Border(left: BorderSide(color: Colors.black12))),
+          decoration: BoxDecoration(border: Border(left: BorderSide(color: Colors.black12)), color: Colors.white),
           child: Column(children: <Widget>[
             Image.network(recommendList[index]['image'], height: ScreenUtil().setHeight(220)),
             Text('￥${recommendList[index]['mallPrice']}'),
@@ -194,5 +205,50 @@ class RecommendWidget extends StatelessWidget {
                     scrollDirection: Axis.horizontal),
               )
             ])));
+  }
+}
+
+class FloorTitle extends StatelessWidget {
+  final String floorPic;
+
+  FloorTitle({Key key, @required this.floorPic}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverToBoxAdapter(
+        child: Container(child: Image.network(floorPic), padding: const EdgeInsets.symmetric(vertical: 12.0)));
+  }
+}
+
+class FloorContent extends StatelessWidget {
+  final List<Map> floorContent;
+
+  FloorContent({Key key, @required this.floorContent}) : super(key: key);
+
+  Widget _topRow() {
+    return Row(children: <Widget>[
+      Image.network(floorContent[0]['image'], width: ScreenUtil().setWidth(375)),
+      Column(children: <Widget>[
+        Image.network(floorContent[1]['image'], width: ScreenUtil().setWidth(375)),
+        Image.network(floorContent[2]['image'], width: ScreenUtil().setWidth(375))
+      ])
+    ]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverToBoxAdapter(
+        child: InkWell(
+      child: Container(
+        child: Column(children: <Widget>[
+          _topRow(),
+          Row(children: <Widget>[
+            Image.network(floorContent[3]['image'], width: ScreenUtil().setWidth(375)),
+            Image.network(floorContent[4]['image'], width: ScreenUtil().setWidth(375))
+          ])
+        ]),
+      ),
+      onTap: () {},
+    ));
   }
 }
