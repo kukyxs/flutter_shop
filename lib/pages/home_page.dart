@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
-import '../service/service_method.dart';
-import 'package:flutter_swiper/flutter_swiper.dart';
 import 'dart:convert';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../service/service_method.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -14,6 +16,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
   @override
   void initState() {
     super.initState();
+    getHomePageHots(1);
   }
 
   @override
