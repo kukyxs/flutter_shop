@@ -6,6 +6,7 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../service/service_method.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -13,15 +14,53 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
+  int page = 0;
+  List hots = [];
+
   @override
   void initState() {
     super.initState();
     getHomePageHots(1);
+    _requestHots();
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  _requestHots() {
+    getHomePageHots(page).then((val) {
+      print(json.decode(val.data));
+      setState(() {
+        hots.addAll(json.decode(val.data)['data']);
+        page++;
+      });
+    });
+  }
+
+  Widget _hotItems(Map hot) {
+    return InkWell(
+        onTap: () {},
+        child: Container(
+            color: Colors.white,
+            margin: const EdgeInsets.only(left: 4.0, right: 4.0, bottom: 8.0),
+            child: Column(
+              children: <Widget>[
+                Image.network(hot['image']),
+                Text(hot['name']),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Text('￥${hot['mallPrice']}'),
+                    Text(
+                      '￥${hot['price']}',
+                      style: TextStyle(color: Colors.black45, decoration: TextDecoration.lineThrough),
+                    )
+                  ],
+                )
+              ],
+            )));
   }
 
   @override
@@ -45,19 +84,38 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
             String floor3Pic = data['data']['floor3Pic']['PICTURE_ADDRESS'];
             List<Map> floor3 = (data['data']['floor3'] as List).cast();
 
-            return CustomScrollView(physics: BouncingScrollPhysics(), slivers: <Widget>[
-              BannerDiy(bannerImages: bannerImages),
-              TopNavigatorBar(categories: categories),
-              AdBanner(bannerUrl: bannerUrl),
-              LeaderPhone(imageUrl: leaderImage, phone: phone),
-              RecommendWidget(recommendList: recommendLists),
-              FloorTitle(floorPic: floor1Pic),
-              FloorContent(floorContent: floor1),
-              FloorTitle(floorPic: floor2Pic),
-              FloorContent(floorContent: floor2),
-              FloorTitle(floorPic: floor3Pic),
-              FloorContent(floorContent: floor3),
-            ]);
+            return SmartRefresher(
+                enablePullDown: true,
+                enablePullUp: true,
+                onRefresh: (up) {
+                  if (up) {
+                    print('===============');
+                    setState(() {
+                      hots.clear();
+                      page = 0;
+                    });
+                    _requestHots();
+                  } else {
+                    print('------------------');
+                    _requestHots();
+                  }
+                },
+                child: CustomScrollView(physics: BouncingScrollPhysics(), slivers: <Widget>[
+                  BannerDiy(bannerImages: bannerImages),
+                  TopNavigatorBar(categories: categories),
+                  AdBanner(bannerUrl: bannerUrl),
+                  LeaderPhone(imageUrl: leaderImage, phone: phone),
+                  RecommendWidget(recommendList: recommendLists),
+                  FloorTitle(floorPic: floor1Pic),
+                  FloorContent(floorContent: floor1),
+                  FloorTitle(floorPic: floor2Pic),
+                  FloorContent(floorContent: floor2),
+                  FloorTitle(floorPic: floor3Pic),
+                  FloorContent(floorContent: floor3),
+                  HotGoodsTitle(),
+                  SliverGrid.count(
+                      crossAxisCount: 2, childAspectRatio: 0.7, children: hots.map((hot) => _hotItems(hot)).toList())
+                ]));
           } else {
             return Center(child: Text('Loading...'));
           }
@@ -252,6 +310,18 @@ class FloorContent extends StatelessWidget {
         ]),
       ),
       onTap: () {},
+    ));
+  }
+}
+
+class HotGoodsTitle extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SliverToBoxAdapter(
+        child: Container(
+      alignment: Alignment.center,
+      child: Text('火爆专区', style: TextStyle(color: Colors.black)),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
     ));
   }
 }
