@@ -1,12 +1,14 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_easyrefresh/phoenix_header.dart';
+import 'package:flutter_easyrefresh/phoenix_footer.dart';
 
 import '../service/service_method.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -14,6 +16,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
+  GlobalKey<EasyRefreshState> _refreshKey = GlobalKey();
+  GlobalKey<RefreshHeaderState> _headerKey = GlobalKey();
+  GlobalKey<RefreshFooterState> _footerKey = GlobalKey();
   int page = 0;
   List hots = [];
 
@@ -84,22 +89,18 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
             String floor3Pic = data['data']['floor3Pic']['PICTURE_ADDRESS'];
             List<Map> floor3 = (data['data']['floor3'] as List).cast();
 
-            return SmartRefresher(
-                enablePullDown: true,
-                enablePullUp: true,
-                onRefresh: (up) {
-                  if (up) {
-                    print('===============');
-                    setState(() {
-                      hots.clear();
-                      page = 0;
-                    });
-                    _requestHots();
-                  } else {
-                    print('------------------');
-                    _requestHots();
-                  }
+            return EasyRefresh(
+                key: _refreshKey,
+                refreshHeader: PhoenixHeader(key: _headerKey),
+                refreshFooter: PhoenixFooter(key: _footerKey),
+                onRefresh: () {
+                  setState(() {
+                    hots.clear();
+                    page = 0;
+                  });
+                  _requestHots();
                 },
+                loadMore: () => _requestHots(),
                 child: CustomScrollView(physics: BouncingScrollPhysics(), slivers: <Widget>[
                   BannerDiy(bannerImages: bannerImages),
                   TopNavigatorBar(categories: categories),
