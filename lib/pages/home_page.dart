@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/ball_pulse_footer.dart';
+import 'package:flutter_easyrefresh/ball_pulse_header.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_easyrefresh/phoenix_header.dart';
-import 'package:flutter_easyrefresh/phoenix_footer.dart';
 
 import '../service/service_method.dart';
 
@@ -50,18 +50,18 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
         child: Container(
             color: Colors.white,
             margin: const EdgeInsets.only(left: 4.0, right: 4.0, bottom: 8.0),
+            padding: const EdgeInsets.all(4.0),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Image.network(hot['image']),
-                Text(hot['name']),
+                Text(hot['name'], textAlign: TextAlign.center, maxLines: 1),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
                     Text('￥${hot['mallPrice']}'),
-                    Text(
-                      '￥${hot['price']}',
-                      style: TextStyle(color: Colors.black45, decoration: TextDecoration.lineThrough),
-                    )
+                    Text('￥${hot['price']}',
+                        style: TextStyle(color: Colors.black45, decoration: TextDecoration.lineThrough))
                   ],
                 )
               ],
@@ -91,8 +91,8 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
 
             return EasyRefresh(
                 key: _refreshKey,
-                refreshHeader: PhoenixHeader(key: _headerKey),
-                refreshFooter: PhoenixFooter(key: _footerKey),
+                refreshHeader: BallPulseHeader(key: _headerKey, color: Colors.pink),
+                refreshFooter: BallPulseFooter(key: _footerKey, color: Colors.pink),
                 onRefresh: () {
                   setState(() {
                     hots.clear();
