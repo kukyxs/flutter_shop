@@ -5,11 +5,14 @@ import 'package:dio/dio.dart';
 
 import '../configs/service_url.dart';
 
-Future getHomePageContent() => request(servicePath['homePageContent'], {'lon': '115.02932', 'lat': '35.76189'});
+Future getHomePageContent() =>
+    request(servicePath['homePageContent'], formData: {'lon': '115.02932', 'lat': '35.76189'});
 
-Future getHomePageHots(int page) => request(servicePath['homePageHotPart'], {'page': page});
+Future getHomePageHots(int page) => request(servicePath['homePageHotPart'], formData: {'page': page});
 
-Future request(String url, Map formData) async {
+Future getCategories() => request(servicePath['getCategory']);
+
+Future request(String url, {Map formData}) async {
   try {
     Response response;
     Dio dio = Dio();

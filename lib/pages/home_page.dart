@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/ball_pulse_footer.dart';
 import 'package:flutter_easyrefresh/ball_pulse_header.dart';
@@ -19,14 +21,22 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
   GlobalKey<EasyRefreshState> _refreshKey = GlobalKey();
   GlobalKey<RefreshHeaderState> _headerKey = GlobalKey();
   GlobalKey<RefreshFooterState> _footerKey = GlobalKey();
-  int page = 0;
-  List hots = [];
+  ScrollController _outController = ScrollController();
+
+  // 防止多次请求
+  bool _isLoadingHots = false;
+  bool _showBackTop = false;
+  int _page = 0;
+  List _hots = [];
 
   @override
   void initState() {
     super.initState();
-    getHomePageHots(1);
     _requestHots();
+
+    _outController.addListener(() {
+      setState(() => _showBackTop = _outController.position.pixels >= window.physicalSize.height);
+    });
   }
 
   @override
@@ -35,13 +45,18 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
   }
 
   _requestHots() {
-    getHomePageHots(page).then((val) {
-      print(json.decode(val.data));
-      setState(() {
-        hots.addAll(json.decode(val.data)['data']);
-        page++;
+    if (!_isLoadingHots) {
+      setState(() => _isLoadingHots = true);
+
+      getHomePageHots(_page).then((val) {
+        print(json.decode(val.data));
+        setState(() {
+          _hots.addAll(json.decode(val.data)['data']);
+          _page++;
+          _isLoadingHots = false;
+        });
       });
-    });
+    }
   }
 
   Widget _hotItems(Map hot) {
@@ -70,60 +85,68 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('百姓生活+'), centerTitle: true),
-      body: FutureBuilder(
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            var data = json.decode(snapshot.data.toString());
-            List<Map> bannerImages = (data['data']['slides'] as List).cast();
-            List<Map> categories = (data['data']['category'] as List).cast();
-            String bannerUrl = data['data']['advertesPicture']['PICTURE_ADDRESS'];
-            String leaderImage = data['data']['shopInfo']['leaderImage'];
-            String phone = data['data']['shopInfo']['leaderPhone'];
-            List<Map> recommendLists = (data['data']['recommend'] as List).cast();
-            String floor1Pic = data['data']['floor1Pic']['PICTURE_ADDRESS'];
-            List<Map> floor1 = (data['data']['floor1'] as List).cast();
-            String floor2Pic = data['data']['floor2Pic']['PICTURE_ADDRESS'];
-            List<Map> floor2 = (data['data']['floor2'] as List).cast();
-            String floor3Pic = data['data']['floor3Pic']['PICTURE_ADDRESS'];
-            List<Map> floor3 = (data['data']['floor3'] as List).cast();
+    return Theme(
+        data: ThemeData(primarySwatch: Colors.pink, iconTheme: IconThemeData(color: Colors.pink)),
+        child: Scaffold(
+          appBar: AppBar(title: Text('百姓生活+'), centerTitle: true),
+          body: FutureBuilder(
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                var data = json.decode(snapshot.data.toString());
+                List<Map> bannerImages = (data['data']['slides'] as List).cast();
+                List<Map> categories = (data['data']['category'] as List).cast();
+                String bannerUrl = data['data']['advertesPicture']['PICTURE_ADDRESS'];
+                String leaderImage = data['data']['shopInfo']['leaderImage'];
+                String phone = data['data']['shopInfo']['leaderPhone'];
+                List<Map> recommendLists = (data['data']['recommend'] as List).cast();
+                String floor1Pic = data['data']['floor1Pic']['PICTURE_ADDRESS'];
+                List<Map> floor1 = (data['data']['floor1'] as List).cast();
+                String floor2Pic = data['data']['floor2Pic']['PICTURE_ADDRESS'];
+                List<Map> floor2 = (data['data']['floor2'] as List).cast();
+                String floor3Pic = data['data']['floor3Pic']['PICTURE_ADDRESS'];
+                List<Map> floor3 = (data['data']['floor3'] as List).cast();
 
-            return EasyRefresh(
-                key: _refreshKey,
-                refreshHeader: BallPulseHeader(key: _headerKey, color: Colors.pink),
-                refreshFooter: BallPulseFooter(key: _footerKey, color: Colors.pink),
-                onRefresh: () {
-                  setState(() {
-                    hots.clear();
-                    page = 0;
-                  });
-                  _requestHots();
-                },
-                loadMore: () => _requestHots(),
-                child: CustomScrollView(physics: BouncingScrollPhysics(), slivers: <Widget>[
-                  BannerDiy(bannerImages: bannerImages),
-                  TopNavigatorBar(categories: categories),
-                  AdBanner(bannerUrl: bannerUrl),
-                  LeaderPhone(imageUrl: leaderImage, phone: phone),
-                  RecommendWidget(recommendList: recommendLists),
-                  FloorTitle(floorPic: floor1Pic),
-                  FloorContent(floorContent: floor1),
-                  FloorTitle(floorPic: floor2Pic),
-                  FloorContent(floorContent: floor2),
-                  FloorTitle(floorPic: floor3Pic),
-                  FloorContent(floorContent: floor3),
-                  HotGoodsTitle(),
-                  SliverGrid.count(
-                      crossAxisCount: 2, childAspectRatio: 0.7, children: hots.map((hot) => _hotItems(hot)).toList())
-                ]));
-          } else {
-            return Center(child: Text('Loading...'));
-          }
-        },
-        future: getHomePageContent(),
-      ),
-    );
+                return EasyRefresh(
+                    key: _refreshKey,
+                    refreshHeader: BallPulseHeader(key: _headerKey, color: Colors.pink),
+                    refreshFooter: BallPulseFooter(key: _footerKey, color: Colors.pink),
+                    loadMore: () => _requestHots(),
+                    child: CustomScrollView(
+                        controller: _outController,
+                        physics: BouncingScrollPhysics(),
+                        slivers: <Widget>[
+                          BannerDiy(bannerImages: bannerImages),
+                          TopNavigatorBar(categories: categories),
+                          AdBanner(bannerUrl: bannerUrl),
+                          LeaderPhone(imageUrl: leaderImage, phone: phone),
+                          RecommendWidget(recommendList: recommendLists),
+                          FloorTitle(floorPic: floor1Pic),
+                          FloorContent(floorContent: floor1),
+                          FloorTitle(floorPic: floor2Pic),
+                          FloorContent(floorContent: floor2),
+                          FloorTitle(floorPic: floor3Pic),
+                          FloorContent(floorContent: floor3),
+                          HotGoodsTitle(),
+                          SliverGrid.count(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.7,
+                              children: _hots.map((hot) => _hotItems(hot)).toList())
+                        ]));
+              } else {
+                return Center(child: CupertinoActivityIndicator(radius: 12.0));
+              }
+            },
+            future: getHomePageContent(),
+          ),
+          floatingActionButton: _showBackTop
+              ? FloatingActionButton(
+                  onPressed: () {
+                    _outController.animateTo(0.0, duration: Duration(milliseconds: 500), curve: Curves.decelerate);
+                  },
+                  mini: true,
+                  child: Icon(Icons.vertical_align_top))
+              : null,
+        ));
   }
 
   @override
@@ -226,7 +249,7 @@ class RecommendWidget extends StatelessWidget {
 
   Widget _recommendTitle() {
     return Container(
-      alignment: Alignment.centerLeft,
+      alignment: Alignment.center,
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
       decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.black12, width: 1.0))),
       child: Text('商品推荐', style: TextStyle(color: Colors.pink)),
