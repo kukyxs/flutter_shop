@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_shop/pages/index_page.dart';
+import 'package:provide/provide.dart';
+import 'provides/sub_category_provide.dart';
 
 void main() {
-  runApp(MyApp());
+  final providers = Providers()..provide(Provider.function((_) => SubCategoryProvide()));
+
+  runApp(ProviderNode(child: ShopApp(), providers: providers));
 }
 
-class MyApp extends StatelessWidget {
+class ShopApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: '',
+        title: 'Flutter Shop',
         theme: ThemeData(primaryColor: Colors.pink),
         home: IndexPage(),
       ),
