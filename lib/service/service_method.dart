@@ -12,6 +12,11 @@ Future getHomePageHots(int page) => request(servicePath['homePageHotPart'], form
 
 Future getCategories() => request(servicePath['getCategory']);
 
+Future getMallGoods(String categoryId, String categorySubId, int page) => request(servicePath['getMallGoods'],
+    formData: categorySubId != null
+        ? {'categoryId': categoryId, 'categorySubId': categorySubId, 'page': page}
+        : {'categoryId': categoryId, 'page': page});
+
 Future request(String url, {Map formData}) async {
   try {
     Response response;
