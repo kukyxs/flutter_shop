@@ -40,17 +40,44 @@ class _CategoryPageState extends State<CategoryPage> with AutomaticKeepAliveClie
         categories.addAll(CategoryEntity.fromMap(json.decode(response.data)).data);
         // 默认初始值列表
         Provide.value<SubCategoryProvide>(context).changeBxCategories(categories[0].bxMallSubDto);
-        _requestGoodsList(categories[0].mallCategoryId, null);
+        Provide.value<SubCategoryProvide>(context).changeCategory(categories[0].mallCategoryId);
+        _requestGoodsList();
       });
     });
   }
 
   // 获取右侧标签下的商品列表
-  void _requestGoodsList(String categoryId, String subCategoryId) {
-    getMallGoods(categoryId, subCategoryId, 1).then((response) {
-      CategoryGoodsBean goods = CategoryGoodsBean.fromMap(json.decode(response.data));
-      Provide.value<MallGoodsProvide>(context).changeGoodsList(goods.data);
+  void _requestGoodsList() {
+    getMallGoods(Provide.value<SubCategoryProvide>(context).categoryId,
+            Provide.value<SubCategoryProvide>(context).subCategoryId, 1)
+        .then((response) {
+      Map<String, dynamic> jsonFormat = json.decode(response.data);
+      // 返回有数据才解析
+      if (jsonFormat['data'] != null) {
+        CategoryGoodsBean goods = CategoryGoodsBean.fromMap(jsonFormat);
+        Provide.value<MallGoodsProvide>(context).changeGoodsList(goods.data);
+      } else
+        Provide.value<MallGoodsProvide>(context).changeGoodsList([]);
     });
+  }
+
+  Widget _subCategoryNav(int index, BxMallSubDtoListBean subDto) {
+    return InkWell(
+        onTap: () {
+          Provide.value<SubCategoryProvide>(context).changeSubCategorySelect(subDto.mallSubId);
+          Provide.value<SubCategoryProvide>(context).changeSubCategoryIndex(index);
+          _requestGoodsList();
+        },
+        child: Container(
+          alignment: Alignment.center,
+          height: ScreenUtil().setHeight(80),
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Text(
+            subDto.mallSubName,
+            style: TextStyle(
+                color: index == Provide.value<SubCategoryProvide>(context).subIndex ? Colors.pink : Colors.black),
+          ),
+        ));
   }
 
   @override
@@ -67,7 +94,8 @@ class _CategoryPageState extends State<CategoryPage> with AutomaticKeepAliveClie
                   onTap: () {
                     setState(() => selectPosition = index);
                     Provide.value<SubCategoryProvide>(context).changeBxCategories(categories[index].bxMallSubDto);
-                    _requestGoodsList(categories[index].mallCategoryId, null);
+                    Provide.value<SubCategoryProvide>(context).changeCategory(categories[index].mallCategoryId);
+                    _requestGoodsList();
                   },
                   child: Container(
                     color: index == selectPosition ? Colors.black12 : Colors.white,
@@ -97,7 +125,7 @@ class _CategoryPageState extends State<CategoryPage> with AutomaticKeepAliveClie
                       height: ScreenUtil().setHeight(80),
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
-                        itemBuilder: (_, index) => SubCategoryNav(subDto: subCategories.subCategories[index]),
+                        itemBuilder: (_, index) => _subCategoryNav(index, subCategories.subCategories[index]),
                         itemCount: subCategories.subCategories.length,
                       ),
                     )),
@@ -105,61 +133,53 @@ class _CategoryPageState extends State<CategoryPage> with AutomaticKeepAliveClie
             // 物品展示
             Expanded(
                 child: Provide<MallGoodsProvide>(
-              builder: (context, widget, goodsProvide) => GridView.builder(
-                  itemCount: goodsProvide.goodList.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2, childAspectRatio: 2 / 3, mainAxisSpacing: 1.0, crossAxisSpacing: 1.0),
-                  itemBuilder: (_, index) => InkWell(
-                        child: Container(
-                          margin: const EdgeInsets.all(2.0),
-                          alignment: Alignment.center,
-                          color: Colors.white,
-                          child: Column(
-                            children: <Widget>[
-                              Image.network(goodsProvide.goodList[index].image,
-                                  width: ScreenUtil().setWidth(250), height: ScreenUtil().setHeight(300)),
-                              Text('${goodsProvide.goodList[index].goodsName}',
-                                  style: TextStyle(fontSize: 14.0, color: Colors.black),
-                                  overflow: TextOverflow.ellipsis),
-                              Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: <Widget>[
-                                    Text('￥${goodsProvide.goodList[index].presentPrice}',
-                                        style: TextStyle(fontSize: 14.0)),
-                                    Text('￥${goodsProvide.goodList[index].oriPrice}',
-                                        style: TextStyle(
-                                            color: Colors.black26,
-                                            decoration: TextDecoration.lineThrough,
-                                            fontSize: 12.0))
-                                  ])
-                            ],
-                          ),
-                        ),
-                        onTap: () {},
-                      )),
+              builder: (context, widget, goodsProvide) => goodsProvide.goodList.isEmpty
+                  // 当前商品分类无商品情况
+                  ? Center(
+                      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+                        Image.asset('images/empty.png',
+                            width: ScreenUtil().setWidth(100), height: ScreenUtil().setHeight(100)),
+                        Text('啊哦...目前未找到该分类下的商品')
+                      ]),
+                    )
+                  // 当前商品列表下有数据情况
+                  : GridView.builder(
+                      itemCount: goodsProvide.goodList.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2, childAspectRatio: 2 / 3, mainAxisSpacing: 1.0, crossAxisSpacing: 1.0),
+                      itemBuilder: (_, index) => InkWell(
+                            child: Container(
+                              margin: const EdgeInsets.all(2.0),
+                              alignment: Alignment.center,
+                              color: Colors.white,
+                              child: Column(
+                                children: <Widget>[
+                                  Image.network(goodsProvide.goodList[index].image,
+                                      width: ScreenUtil().setWidth(250), height: ScreenUtil().setHeight(300)),
+                                  Text('${goodsProvide.goodList[index].goodsName}',
+                                      style: TextStyle(fontSize: 14.0, color: Colors.black),
+                                      overflow: TextOverflow.ellipsis),
+                                  Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: <Widget>[
+                                        Text('￥${goodsProvide.goodList[index].presentPrice}',
+                                            style: TextStyle(fontSize: 14.0)),
+                                        Text('￥${goodsProvide.goodList[index].oriPrice}',
+                                            style: TextStyle(
+                                                color: Colors.black26,
+                                                decoration: TextDecoration.lineThrough,
+                                                fontSize: 12.0))
+                                      ])
+                                ],
+                              ),
+                            ),
+                            onTap: () {},
+                          )),
             ))
           ],
         ))
       ]),
     );
-  }
-}
-
-class SubCategoryNav extends StatelessWidget {
-  final BxMallSubDtoListBean subDto;
-
-  SubCategoryNav({Key key, @required this.subDto}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-        onTap: () {},
-        child: Container(
-          alignment: Alignment.center,
-          height: ScreenUtil().setHeight(80),
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Text(subDto.mallSubName),
-        ));
   }
 }
