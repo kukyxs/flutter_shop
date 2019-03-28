@@ -1,7 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/ball_pulse_footer.dart';
+import 'package:flutter_easyrefresh/ball_pulse_header.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provide/provide.dart';
 
 import '../entities/category.dart';
@@ -17,6 +21,10 @@ class CategoryPage extends StatefulWidget {
 
 class _CategoryPageState extends State<CategoryPage> with AutomaticKeepAliveClientMixin {
   List<CategoryData> categories = <CategoryData>[];
+  GlobalKey<EasyRefreshState> _refreshKey = GlobalKey();
+  GlobalKey<RefreshHeaderState> _headerKey = GlobalKey();
+  GlobalKey<RefreshFooterState> _footerKey = GlobalKey();
+  ScrollController _gridController = ScrollController();
   int selectPosition = 0;
   int page = 0;
 
@@ -49,15 +57,27 @@ class _CategoryPageState extends State<CategoryPage> with AutomaticKeepAliveClie
   // 获取右侧标签下的商品列表
   void _requestGoodsList() {
     getMallGoods(Provide.value<SubCategoryProvide>(context).categoryId,
-            Provide.value<SubCategoryProvide>(context).subCategoryId, 1)
+            Provide.value<SubCategoryProvide>(context).subCategoryId, Provide.value<MallGoodsProvide>(context).page)
         .then((response) {
       Map<String, dynamic> jsonFormat = json.decode(response.data);
       // 返回有数据才解析
       if (jsonFormat['data'] != null) {
         CategoryGoodsBean goods = CategoryGoodsBean.fromMap(jsonFormat);
-        Provide.value<MallGoodsProvide>(context).changeGoodsList(goods.data);
-      } else
-        Provide.value<MallGoodsProvide>(context).changeGoodsList([]);
+        if (Provide.value<MallGoodsProvide>(context).page == 1) {
+          Provide.value<MallGoodsProvide>(context).changeGoodsList(goods.data);
+        } else {
+          Provide.value<MallGoodsProvide>(context).loadMoreGoodsList(goods.data);
+        }
+        Provide.value<MallGoodsProvide>(context).increasePage();
+      } else {
+        // 无数据返回情况
+        if (Provide.value<MallGoodsProvide>(context).page == 1)
+          Provide.value<MallGoodsProvide>(context).changeGoodsList([]);
+        else {
+          Fluttertoast.showToast(msg: '没有更多啦~');
+          Provide.value<MallGoodsProvide>(context).loadMoreGoodsList([]);
+        }
+      }
     });
   }
 
@@ -66,7 +86,9 @@ class _CategoryPageState extends State<CategoryPage> with AutomaticKeepAliveClie
         onTap: () {
           Provide.value<SubCategoryProvide>(context).changeSubCategorySelect(subDto.mallSubId);
           Provide.value<SubCategoryProvide>(context).changeSubCategoryIndex(index);
+          Provide.value<MallGoodsProvide>(context).initialPage();
           _requestGoodsList();
+          _gridController.animateTo(0, duration: Duration(milliseconds: 500), curve: Curves.decelerate);
         },
         child: Container(
           alignment: Alignment.center,
@@ -95,7 +117,9 @@ class _CategoryPageState extends State<CategoryPage> with AutomaticKeepAliveClie
                     setState(() => selectPosition = index);
                     Provide.value<SubCategoryProvide>(context).changeBxCategories(categories[index].bxMallSubDto);
                     Provide.value<SubCategoryProvide>(context).changeCategory(categories[index].mallCategoryId);
+                    Provide.value<MallGoodsProvide>(context).initialPage();
                     _requestGoodsList();
+                    _gridController.animateTo(0, duration: Duration(milliseconds: 500), curve: Curves.decelerate);
                   },
                   child: Container(
                     color: index == selectPosition ? Colors.black12 : Colors.white,
@@ -143,39 +167,47 @@ class _CategoryPageState extends State<CategoryPage> with AutomaticKeepAliveClie
                       ]),
                     )
                   // 当前商品列表下有数据情况
-                  : GridView.builder(
-                      itemCount: goodsProvide.goodList.length,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2, childAspectRatio: 2 / 3, mainAxisSpacing: 1.0, crossAxisSpacing: 1.0),
-                      itemBuilder: (_, index) => InkWell(
-                            child: Container(
-                              margin: const EdgeInsets.all(2.0),
-                              alignment: Alignment.center,
-                              color: Colors.white,
-                              child: Column(
-                                children: <Widget>[
-                                  Image.network(goodsProvide.goodList[index].image,
-                                      width: ScreenUtil().setWidth(250), height: ScreenUtil().setHeight(300)),
-                                  Text('${goodsProvide.goodList[index].goodsName}',
-                                      style: TextStyle(fontSize: 14.0, color: Colors.black),
-                                      overflow: TextOverflow.ellipsis),
-                                  Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      children: <Widget>[
-                                        Text('￥${goodsProvide.goodList[index].presentPrice}',
-                                            style: TextStyle(fontSize: 14.0)),
-                                        Text('￥${goodsProvide.goodList[index].oriPrice}',
-                                            style: TextStyle(
-                                                color: Colors.black26,
-                                                decoration: TextDecoration.lineThrough,
-                                                fontSize: 12.0))
-                                      ])
-                                ],
-                              ),
-                            ),
-                            onTap: () {},
-                          )),
+                  : EasyRefresh(
+                      key: _refreshKey,
+                      refreshHeader: BallPulseHeader(key: _headerKey, color: Colors.pink),
+                      refreshFooter: BallPulseFooter(key: _footerKey, color: Colors.pink),
+                      loadMore: () {
+                        _requestGoodsList();
+                      },
+                      child: GridView.builder(
+                          controller: _gridController,
+                          itemCount: goodsProvide.goodList.length,
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2, childAspectRatio: 2 / 3, mainAxisSpacing: 1.0, crossAxisSpacing: 1.0),
+                          itemBuilder: (_, index) => InkWell(
+                                child: Container(
+                                  margin: const EdgeInsets.all(2.0),
+                                  alignment: Alignment.center,
+                                  color: Colors.white,
+                                  child: Column(
+                                    children: <Widget>[
+                                      Image.network(goodsProvide.goodList[index].image,
+                                          width: ScreenUtil().setWidth(250), height: ScreenUtil().setHeight(300)),
+                                      Text('${goodsProvide.goodList[index].goodsName}',
+                                          style: TextStyle(fontSize: 14.0, color: Colors.black),
+                                          overflow: TextOverflow.ellipsis),
+                                      Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: <Widget>[
+                                            Text('￥${goodsProvide.goodList[index].presentPrice}',
+                                                style: TextStyle(fontSize: 14.0)),
+                                            Text('￥${goodsProvide.goodList[index].oriPrice}',
+                                                style: TextStyle(
+                                                    color: Colors.black26,
+                                                    decoration: TextDecoration.lineThrough,
+                                                    fontSize: 12.0))
+                                          ])
+                                    ],
+                                  ),
+                                ),
+                                onTap: () {},
+                              ))),
             ))
           ],
         ))
