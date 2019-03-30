@@ -7,10 +7,12 @@ import 'package:flutter_easyrefresh/ball_pulse_footer.dart';
 import 'package:flutter_easyrefresh/ball_pulse_header.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_shop/configs/application.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../service/service_method.dart';
+import '../router/routers.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -258,7 +260,9 @@ class RecommendWidget extends StatelessWidget {
 
   Widget _recommendItem(BuildContext context, int index) {
     return InkWell(
-        onTap: () {},
+        onTap: () {
+          Application.router.navigateTo(context, Routers.generateDetailsRouterPath(recommendList[index]['goodsId']));
+        },
         child: Container(
           width: ScreenUtil().setWidth(250),
           height: ScreenUtil().setHeight(330),
