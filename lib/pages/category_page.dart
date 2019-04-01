@@ -8,10 +8,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provide/provide.dart';
 
+import '../configs/application.dart';
 import '../entities/category.dart';
 import '../entities/category_goods.dart';
 import '../provides/mall_goods_provide.dart';
 import '../provides/sub_category_provide.dart';
+import '../router/routers.dart';
 import '../service/service_method.dart';
 
 class CategoryPage extends StatefulWidget {
@@ -206,7 +208,10 @@ class _CategoryPageState extends State<CategoryPage> with AutomaticKeepAliveClie
                                     ],
                                   ),
                                 ),
-                                onTap: () {},
+                                onTap: () {
+                                  Application.router.navigateTo(
+                                      context, Routers.generateDetailsRouterPath(goodsProvide.goodList[index].goodsId));
+                                },
                               ))),
             ))
           ],

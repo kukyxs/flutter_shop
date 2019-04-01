@@ -13,6 +13,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../service/service_method.dart';
 import '../router/routers.dart';
+import '../configs/application.dart';
+import '../router/routers.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -63,7 +65,9 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
 
   Widget _hotItems(Map hot) {
     return InkWell(
-        onTap: () {},
+        onTap: () {
+          Application.router.navigateTo(context, Routers.generateDetailsRouterPath(hot['goodsId']));
+        },
         child: Container(
             color: Colors.white,
             margin: const EdgeInsets.only(left: 4.0, right: 4.0, bottom: 8.0),
@@ -167,7 +171,11 @@ class BannerDiy extends StatelessWidget {
       height: ScreenUtil().setHeight(320),
       child: Swiper(
         itemCount: bannerImages.length,
-        itemBuilder: (context, int index) => Image.network('${bannerImages[index]['image']}', fit: BoxFit.fill),
+        itemBuilder: (context, int index) => InkWell(
+              child: Image.network('${bannerImages[index]['image']}', fit: BoxFit.fill),
+              onTap: () => Application.router
+                  .navigateTo(context, Routers.generateDetailsRouterPath(bannerImages[index]['goodsId'])),
+            ),
         pagination: SwiperPagination(),
         autoplay: true,
       ),
@@ -314,12 +322,18 @@ class FloorContent extends StatelessWidget {
 
   FloorContent({Key key, @required this.floorContent}) : super(key: key);
 
-  Widget _topRow() {
+  Widget _goodsImg(floorItem, context) {
+    return InkWell(
+        child: Image.network(floorItem['image'], width: ScreenUtil().setWidth(375)),
+        onTap: () => Application.router.navigateTo(context, Routers.generateDetailsRouterPath(floorItem['goodsId'])));
+  }
+
+  Widget _topRow(context) {
     return Row(children: <Widget>[
-      Image.network(floorContent[0]['image'], width: ScreenUtil().setWidth(375)),
+      _goodsImg(floorContent[0], context),
       Column(children: <Widget>[
-        Image.network(floorContent[1]['image'], width: ScreenUtil().setWidth(375)),
-        Image.network(floorContent[2]['image'], width: ScreenUtil().setWidth(375))
+        _goodsImg(floorContent[1], context),
+        _goodsImg(floorContent[2], context),
       ])
     ]);
   }
@@ -330,10 +344,10 @@ class FloorContent extends StatelessWidget {
         child: InkWell(
       child: Container(
         child: Column(children: <Widget>[
-          _topRow(),
+          _topRow(context),
           Row(children: <Widget>[
-            Image.network(floorContent[3]['image'], width: ScreenUtil().setWidth(375)),
-            Image.network(floorContent[4]['image'], width: ScreenUtil().setWidth(375))
+            _goodsImg(floorContent[3], context),
+            _goodsImg(floorContent[4], context),
           ])
         ]),
       ),

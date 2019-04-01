@@ -17,6 +17,8 @@ Future getMallGoods(String categoryId, String categorySubId, int page) => reques
         ? {'categoryId': categoryId, 'categorySubId': categorySubId, 'page': page}
         : {'categoryId': categoryId, 'page': page});
 
+Future getGoodsDetail(String id) => request(servicePath['getGoodDetailById'], formData: {'goodId': id});
+
 Future request(String url, {Map formData}) async {
   try {
     Response response;

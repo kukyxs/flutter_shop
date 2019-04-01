@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provide/provide.dart';
 
 import 'configs/application.dart';
+import 'provides/goods_detail_provide.dart';
 import 'provides/mall_goods_provide.dart';
 import 'provides/sub_category_provide.dart';
 import 'router/routers.dart';
@@ -10,9 +14,16 @@ import 'router/routers.dart';
 void main() {
   final providers = Providers()
     ..provide(Provider.function((_) => SubCategoryProvide()))
-    ..provide(Provider.function((_) => MallGoodsProvide()));
+    ..provide(Provider.function((_) => MallGoodsProvide()))
+    ..provide(Provider.function((_) => GoodsDetailProvide()));
 
-  runApp(ProviderNode(child: ShopApp(), providers: providers));
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]).then((_) {
+    runApp(ProviderNode(child: ShopApp(), providers: providers));
+
+    if (Platform.isAndroid) {
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+    }
+  });
 }
 
 class ShopApp extends StatelessWidget {
