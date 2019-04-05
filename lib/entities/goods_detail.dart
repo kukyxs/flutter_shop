@@ -1,14 +1,14 @@
 class GoodsDetailModel {
   String code;
   String message;
-  GoodDetailInfo data;
+  GoodsDetailInfo data;
 
   static GoodsDetailModel fromMap(Map<String, dynamic> map) {
-    GoodsDetailModel detail = new GoodsDetailModel();
-    detail.code = map['code'];
-    detail.message = map['message'];
-    detail.data = GoodDetailInfo.fromMap(map['data']);
-    return detail;
+    GoodsDetailModel model = new GoodsDetailModel();
+    model.code = map['code'];
+    model.message = map['message'];
+    model.data = GoodsDetailInfo.fromMap(map['data']);
+    return model;
   }
 
   static List<GoodsDetailModel> fromMapList(dynamic mapList) {
@@ -20,19 +20,21 @@ class GoodsDetailModel {
   }
 }
 
-class GoodDetailInfo {
+class GoodsDetailInfo {
   AdvertesPictureBean advertesPicture;
   GoodInfoBean goodInfo;
+  List<GoodCommentsListBean> goodComments;
 
-  static GoodDetailInfo fromMap(Map<String, dynamic> map) {
-    GoodDetailInfo dataBean = new GoodDetailInfo();
+  static GoodsDetailInfo fromMap(Map<String, dynamic> map) {
+    GoodsDetailInfo dataBean = new GoodsDetailInfo();
     dataBean.advertesPicture = AdvertesPictureBean.fromMap(map['advertesPicture']);
     dataBean.goodInfo = GoodInfoBean.fromMap(map['goodInfo']);
+    dataBean.goodComments = GoodCommentsListBean.fromMapList(map['goodComments']);
     return dataBean;
   }
 
-  static List<GoodDetailInfo> fromMapList(dynamic mapList) {
-    List<GoodDetailInfo> list = new List(mapList.length);
+  static List<GoodsDetailInfo> fromMapList(dynamic mapList) {
+    List<GoodsDetailInfo> list = new List(mapList.length);
     for (int i = 0; i < mapList.length; i++) {
       list[i] = fromMap(mapList[i]);
     }
@@ -73,9 +75,9 @@ class GoodInfoBean {
   String shopId;
   String goodsName;
   String goodsDetail;
+  int amount;
   double oriPrice;
   double presentPrice;
-  int amount;
   int state;
 
   static GoodInfoBean fromMap(Map<String, dynamic> map) {
@@ -92,15 +94,39 @@ class GoodInfoBean {
     goodInfoBean.shopId = map['shopId'];
     goodInfoBean.goodsName = map['goodsName'];
     goodInfoBean.goodsDetail = map['goodsDetail'];
-    goodInfoBean.oriPrice = map['oriPrice'];
-    goodInfoBean.presentPrice = map['presentPrice'];
     goodInfoBean.amount = map['amount'];
+    goodInfoBean.oriPrice = map['oriPrice'] + 0.0;
+    goodInfoBean.presentPrice = map['presentPrice'] + 0.0;
     goodInfoBean.state = map['state'];
     return goodInfoBean;
   }
 
   static List<GoodInfoBean> fromMapList(dynamic mapList) {
     List<GoodInfoBean> list = new List(mapList.length);
+    for (int i = 0; i < mapList.length; i++) {
+      list[i] = fromMap(mapList[i]);
+    }
+    return list;
+  }
+}
+
+class GoodCommentsListBean {
+  String comments;
+  String userName;
+  int SCORE;
+  int discussTime;
+
+  static GoodCommentsListBean fromMap(Map<String, dynamic> map) {
+    GoodCommentsListBean goodCommentsListBean = new GoodCommentsListBean();
+    goodCommentsListBean.comments = map['comments'];
+    goodCommentsListBean.userName = map['userName'];
+    goodCommentsListBean.SCORE = map['SCORE'];
+    goodCommentsListBean.discussTime = map['discussTime'];
+    return goodCommentsListBean;
+  }
+
+  static List<GoodCommentsListBean> fromMapList(dynamic mapList) {
+    List<GoodCommentsListBean> list = new List(mapList.length);
     for (int i = 0; i < mapList.length; i++) {
       list[i] = fromMap(mapList[i]);
     }
