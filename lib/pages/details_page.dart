@@ -87,7 +87,9 @@ class ListType extends StatelessWidget {
                                 Container(
                                   child: Column(
                                     children: <Widget>[
-                                      Html(data: detailProvide.detail.data.goodInfo.goodsDetail),
+                                      detailProvide.detailIndex == 0
+                                          ? Html(data: detailProvide.detail.data.goodInfo.goodsDetail)
+                                          : Container(alignment: Alignment.center, height: 60.0, child: Text('暂时没有评论哦~')),
                                       Image.network(detailProvide.detail.data.advertesPicture.PICTURE_ADDRESS)
                                     ],
                                   ),
