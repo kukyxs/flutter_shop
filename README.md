@@ -1,6 +1,6 @@
 # flutter_shop
 
-A Flutter shop application.
+本项目代码是付费课程的练习项目，不完全按照课程的代码，加入自己对界面的理解重新构造一些界面。
 
 ## Getting Started
 
