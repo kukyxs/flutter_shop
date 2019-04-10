@@ -27,6 +27,7 @@ class _CategoryPageState extends State<CategoryPage> with AutomaticKeepAliveClie
   GlobalKey<RefreshHeaderState> _headerKey = GlobalKey();
   GlobalKey<RefreshFooterState> _footerKey = GlobalKey();
   ScrollController _gridController = ScrollController();
+  ScrollController _topNavController = ScrollController();
   int selectPosition = 0;
   int page = 0;
 
@@ -58,8 +59,8 @@ class _CategoryPageState extends State<CategoryPage> with AutomaticKeepAliveClie
 
   // 获取右侧标签下的商品列表
   void _requestGoodsList() {
-    getMallGoods(Provide.value<SubCategoryProvide>(context).categoryId,
-            Provide.value<SubCategoryProvide>(context).subCategoryId, Provide.value<MallGoodsProvide>(context).page)
+    getMallGoods(Provide.value<SubCategoryProvide>(context).categoryId, Provide.value<SubCategoryProvide>(context).subCategoryId,
+            Provide.value<MallGoodsProvide>(context).page)
         .then((response) {
       Map<String, dynamic> jsonFormat = json.decode(response.data);
       // 返回有数据才解析
@@ -98,8 +99,7 @@ class _CategoryPageState extends State<CategoryPage> with AutomaticKeepAliveClie
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Text(
             subDto.mallSubName,
-            style: TextStyle(
-                color: index == Provide.value<SubCategoryProvide>(context).subIndex ? Colors.pink : Colors.black),
+            style: TextStyle(color: index == Provide.value<SubCategoryProvide>(context).subIndex ? Colors.pink : Colors.black),
           ),
         ));
   }
@@ -122,12 +122,12 @@ class _CategoryPageState extends State<CategoryPage> with AutomaticKeepAliveClie
                     Provide.value<MallGoodsProvide>(context).initialPage();
                     _requestGoodsList();
                     _gridController.animateTo(0, duration: Duration(milliseconds: 500), curve: Curves.decelerate);
+                    _topNavController.animateTo(0, duration: Duration(milliseconds: 300), curve: Curves.decelerate);
                   },
                   child: Container(
                     color: index == selectPosition ? Colors.black12 : Colors.white,
                     height: ScreenUtil().setHeight(120),
-                    child:
-                        Text(categories[index].mallCategoryName, style: TextStyle(fontSize: 15.0, color: Colors.black)),
+                    child: Text(categories[index].mallCategoryName, style: TextStyle(fontSize: 15.0, color: Colors.black)),
                     alignment: Alignment.centerLeft,
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   ),
@@ -150,6 +150,7 @@ class _CategoryPageState extends State<CategoryPage> with AutomaticKeepAliveClie
                       width: ScreenUtil().setWidth(570),
                       height: ScreenUtil().setHeight(80),
                       child: ListView.builder(
+                        controller: _topNavController,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (_, index) => _subCategoryNav(index, subCategories.subCategories[index]),
                         itemCount: subCategories.subCategories.length,
@@ -163,8 +164,7 @@ class _CategoryPageState extends State<CategoryPage> with AutomaticKeepAliveClie
                   // 当前商品分类无商品情况
                   ? Center(
                       child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-                        Image.asset('images/empty.png',
-                            width: ScreenUtil().setWidth(100), height: ScreenUtil().setHeight(100)),
+                        Image.asset('images/empty.png', width: ScreenUtil().setWidth(100), height: ScreenUtil().setHeight(100)),
                         Text('啊哦...目前未找到该分类下的商品')
                       ]),
                     )
@@ -191,26 +191,20 @@ class _CategoryPageState extends State<CategoryPage> with AutomaticKeepAliveClie
                                       Image.network(goodsProvide.goodList[index].image,
                                           width: ScreenUtil().setWidth(250), height: ScreenUtil().setHeight(300)),
                                       Text('${goodsProvide.goodList[index].goodsName}',
-                                          style: TextStyle(fontSize: 14.0, color: Colors.black),
-                                          overflow: TextOverflow.ellipsis),
+                                          style: TextStyle(fontSize: 14.0, color: Colors.black), overflow: TextOverflow.ellipsis),
                                       Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                           crossAxisAlignment: CrossAxisAlignment.end,
                                           children: <Widget>[
-                                            Text('￥${goodsProvide.goodList[index].presentPrice}',
-                                                style: TextStyle(fontSize: 14.0)),
+                                            Text('￥${goodsProvide.goodList[index].presentPrice}', style: TextStyle(fontSize: 14.0)),
                                             Text('￥${goodsProvide.goodList[index].oriPrice}',
-                                                style: TextStyle(
-                                                    color: Colors.black26,
-                                                    decoration: TextDecoration.lineThrough,
-                                                    fontSize: 12.0))
+                                                style: TextStyle(color: Colors.black26, decoration: TextDecoration.lineThrough, fontSize: 12.0))
                                           ])
                                     ],
                                   ),
                                 ),
                                 onTap: () {
-                                  Application.router.navigateTo(
-                                      context, Routers.generateDetailsRouterPath(goodsProvide.goodList[index].goodsId));
+                                  Application.router.navigateTo(context, Routers.generateDetailsRouterPath(goodsProvide.goodList[index].goodsId));
                                 },
                               ))),
             ))
