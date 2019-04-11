@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_shop/provides/cart_provide.dart';
 import 'package:flutter_shop/provides/goods_detail_provide.dart';
 import 'package:provide/provide.dart';
 
@@ -174,12 +175,18 @@ class NestedType extends StatelessWidget {
                           color: Colors.green,
                           alignment: Alignment.center,
                           child: Text('加入购物车', style: TextStyle(color: Colors.white, fontSize: 18.0))),
-                      onTap: () {})),
+                      onTap: () {
+                        Provide.value<CartProvide>(context).saveCarts(detailProvide.detail.data.goodInfo, 1);
+                      })),
               Expanded(
                   child: InkWell(
                       child: Container(
                           color: Colors.red, alignment: Alignment.center, child: Text('立即购买', style: TextStyle(color: Colors.white, fontSize: 18.0))),
-                      onTap: () {}))
+                      onTap: () {
+                        Provide.value<CartProvide>(context).restoreShopCarts().then((s) {
+                          print('========>: ${json.decode(s)}');
+                        });
+                      }))
             ]),
           ),
         )),
