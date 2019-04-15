@@ -3,11 +3,22 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../utils/preference_utils.dart';
 import '../entities/goods_detail.dart';
+import '../entities/cate_entity.dart';
 
 class CartProvide with ChangeNotifier {
   String _shopCartList = '[]';
+  List<CateEntity> _shopCarts = [];
 
-  String get shopCartList => _shopCartList;
+  List<CateEntity> get shopCarts => _shopCarts;
+
+  CartProvide() {
+    restoreShopCarts().then((value) {
+      _shopCartList = value;
+      _shopCarts.clear();
+      _shopCarts.addAll(_shopCartList == '[]' ? [] : CateEntity.fromJsonList(json.decode(_shopCartList)));
+      notifyListeners();
+    });
+  }
 
   saveCarts(GoodInfoBean info, int count) async {
     _shopCartList = await restoreShopCarts();
@@ -38,7 +49,8 @@ class CartProvide with ChangeNotifier {
 
     PreferenceUtils.instance.saveString('shop_cart', json.encode(carts));
     _shopCartList = json.encode(carts);
-
+    shopCarts.clear();
+    shopCarts.addAll(carts.isEmpty ? [] : CateEntity.fromJsonList(carts));
     notifyListeners();
   }
 

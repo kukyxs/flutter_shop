@@ -175,12 +175,16 @@ class NestedType extends StatelessWidget {
                           color: Colors.green,
                           alignment: Alignment.center,
                           child: Text('加入购物车', style: TextStyle(color: Colors.white, fontSize: 18.0))),
-                      onTap: () {})),
+                      onTap: () {
+                        Provide.value<CartProvide>(context).saveCarts(detailProvide.detail.data.goodInfo, 1);
+                      })),
               Expanded(
                   child: InkWell(
                       child: Container(
                           color: Colors.red, alignment: Alignment.center, child: Text('立即购买', style: TextStyle(color: Colors.white, fontSize: 18.0))),
-                      onTap: () {}))
+                      onTap: () {
+                        Provide.value<CartProvide>(context).shopCarts.forEach((e) => print('${e.goodsName} - ${e.count}件'));
+                      }))
             ]),
           ),
         )),
