@@ -4,6 +4,7 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_shop/provides/cart_provide.dart';
+import 'package:flutter_shop/provides/page_provide.dart';
 import 'package:provide/provide.dart';
 
 import 'configs/application.dart';
@@ -14,6 +15,7 @@ import 'router/routers.dart';
 
 void main() {
   final providers = Providers()
+    ..provide(Provider.function((_) => PageIndexProvide()))
     ..provide(Provider.function((_) => SubCategoryProvide()))
     ..provide(Provider.function((_) => MallGoodsProvide()))
     ..provide(Provider.function((_) => GoodsDetailProvide()))

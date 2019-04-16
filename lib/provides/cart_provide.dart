@@ -52,6 +52,26 @@ class CartProvide with ChangeNotifier {
     notifyListeners();
   }
 
+  increaseOrReduceOperation(String goodsId, bool isIncrease) {
+    List<dynamic> carts = json.decode(_shopCartList);
+
+    carts.forEach((cart) {
+      if (cart['goodsId'] == goodsId) {
+        if (isIncrease) {
+          cart['count'] += 1;
+        } else {
+          cart['count'] -= 1;
+        }
+      }
+    });
+
+    PreferenceUtils.instance.saveString('shop_cart', json.encode(carts));
+    _shopCartList = json.encode(carts);
+    shopCarts.clear();
+    shopCarts.addAll(carts.isEmpty ? [] : CateEntity.fromJsonList(carts));
+    notifyListeners();
+  }
+
   removeCarts(String goodsId) {
     List<dynamic> carts = _shopCartList == '[]' ? [] : json.decode(_shopCartList);
 

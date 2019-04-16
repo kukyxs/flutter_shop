@@ -7,6 +7,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shop/provides/cart_provide.dart';
 import 'package:flutter_shop/provides/goods_detail_provide.dart';
+import 'package:flutter_shop/provides/page_provide.dart';
 import 'package:provide/provide.dart';
 
 import '../entities/goods_detail.dart';
@@ -41,7 +42,8 @@ class NestedType extends StatelessWidget {
         body: Container(
           alignment: Alignment.center,
           child: _detail == null || _detail.data == null || _detail.data.goodInfo == null
-              ? CupertinoActivityIndicator(radius: 12.0)
+              ? CupertinoActivityIndicator(radius: 12.0) // 无商品情况使用加载
+              // 使用横向滑动列表展示不同页面
               : DefaultTabController(
                   length: tabs.length,
                   child: NestedScrollView(
@@ -49,16 +51,23 @@ class NestedType extends StatelessWidget {
                             SliverOverlapAbsorber(
                               handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
                               child: SliverAppBar(
-                                forceElevated: innerScrolled,
                                 pinned: true,
                                 centerTitle: true,
-                                title: Text(_detail.data.goodInfo.goodsName, maxLines: 1, overflow: TextOverflow.ellipsis),
+                                // 商品名
+                                title: Text(
+                                  _detail.data.goodInfo.goodsName,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(color: innerScrolled ? Colors.white : Colors.black),
+                                ),
+                                forceElevated: innerScrolled,
+                                // 折叠头部信息
                                 flexibleSpace: FlexibleSpaceBar(
                                   collapseMode: CollapseMode.pin,
                                   background: Container(
                                     alignment: Alignment.center,
                                     color: Colors.white,
-                                    height: 550.0,
+                                    height: 560.0,
                                     child: Column(
                                       children: <Widget>[
                                         Image.network(_detail.data.goodInfo.image1, height: 340),
@@ -102,7 +111,8 @@ class NestedType extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                expandedHeight: 550.0,
+                                // 折叠高度
+                                expandedHeight: 560.0,
                                 bottom: TabBar(
                                     indicator: BoxDecoration(color: Colors.transparent),
                                     labelColor: Colors.pink,
@@ -122,21 +132,27 @@ class NestedType extends StatelessWidget {
                               ),
                             )
                           ],
+                      // 详情页面和评论页面列表
                       body: TabBarView(children: [
                         Builder(
                             builder: (ctx) => CustomScrollView(
+                                  // 详情页面 H5
                                   slivers: <Widget>[
                                     SliverOverlapInjector(handle: NestedScrollView.sliverOverlapAbsorberHandleFor(ctx)),
                                     SliverToBoxAdapter(child: Html(data: _detail.data.goodInfo.goodsDetail)),
+                                    // 广告条
                                     SliverToBoxAdapter(child: Image.network(detailProvide.detail.data.advertesPicture.PICTURE_ADDRESS))
                                   ],
                                 )),
                         Builder(
+                            // 评论页面
                             builder: (ctx) => CustomScrollView(
                                   slivers: <Widget>[
                                     SliverOverlapInjector(handle: NestedScrollView.sliverOverlapAbsorberHandleFor(ctx)),
                                     _detail.data.goodComments.isEmpty
+                                        // 无评论
                                         ? SliverToBoxAdapter(child: Container(alignment: Alignment.center, height: 60.0, child: Text('暂时没有评论哦~')))
+                                        // 评论列表
                                         : SliverFixedExtentList(
                                             delegate: SliverChildBuilderDelegate(
                                                 (_, index) => Container(
@@ -168,16 +184,33 @@ class NestedType extends StatelessWidget {
           child: Card(
             margin: const EdgeInsets.all(0.0),
             child: Row(children: <Widget>[
-              IconButton(icon: Icon(CupertinoIcons.shopping_cart, size: 32.0, color: Colors.pink), onPressed: () {}),
+              IconButton(
+                  icon: Icon(CupertinoIcons.shopping_cart, size: 32.0, color: Colors.pink),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Provide.value<PageIndexProvide>(context).changePage(2);
+                  }),
               Expanded(
-                  child: InkWell(
-                      child: Container(
-                          color: Colors.green,
-                          alignment: Alignment.center,
-                          child: Text('加入购物车', style: TextStyle(color: Colors.white, fontSize: 18.0))),
-                      onTap: () {
-                        Provide.value<CartProvide>(context).saveCarts(detailProvide.detail.data.goodInfo, 1);
-                      })),
+                  child: Builder(
+                builder: (ctx) => InkWell(
+                    child: Container(
+                        color: Colors.green,
+                        alignment: Alignment.center,
+                        child: Text('加入购物车', style: TextStyle(color: Colors.white, fontSize: 18.0))),
+                    onTap: () {
+                      Provide.value<CartProvide>(context).saveCarts(detailProvide.detail.data.goodInfo, 1);
+                      Scaffold.of(ctx).showSnackBar(SnackBar(
+                        content: Text('添加商品成功'),
+                        duration: Duration(milliseconds: 1250),
+                        action: SnackBarAction(
+                            label: '去购物车查看',
+                            onPressed: () {
+                              Navigator.pop(context);
+                              Provide.value<PageIndexProvide>(context).changePage(2);
+                            }),
+                      ));
+                    }),
+              )),
               Expanded(
                   child: InkWell(
                       child: Container(

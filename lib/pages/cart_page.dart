@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_shop/provides/cart_provide.dart';
+import 'package:flutter_shop/provides/page_provide.dart';
 import 'package:provide/provide.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -26,7 +27,10 @@ class CartPage extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(vertical: 4.0),
                             child: Text('购物车还空着，快去挑选商品吧~', style: TextStyle(fontSize: 12.0, color: Colors.black26)),
                           ),
-                          RaisedButton(onPressed: () {}, child: Text('随便逛逛', style: TextStyle(color: Colors.white)), color: Colors.pink)
+                          RaisedButton(
+                              onPressed: () => Provide.value<PageIndexProvide>(context).changePage(0),
+                              child: Text('随便逛逛', style: TextStyle(color: Colors.white)),
+                              color: Colors.pink)
                         ],
                       ),
                     )
@@ -77,7 +81,11 @@ class CartPage extends StatelessWidget {
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                       ),
-                                      CartCountWidget(initCount: carts.shopCarts[index].count)
+                                      // 数量管理器
+                                      CartCountWidget(
+                                        count: carts.shopCarts[index].count,
+                                        goodsId: carts.shopCarts[index].goodsId,
+                                      )
                                     ],
                                   ),
                                 )),
@@ -85,14 +93,17 @@ class CartPage extends StatelessWidget {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: <Widget>[
-                                    Text('￥${1090.00}', style: TextStyle(color: Colors.black, fontSize: 16.0)),
+                                    Text('￥${(carts.shopCarts[index].count * carts.shopCarts[index].price).toStringAsFixed(2)}',
+                                        style: TextStyle(color: Colors.black, fontSize: 16.0)),
                                     Text(
-                                      '￥${1580.00}',
+                                      '￥${(carts.shopCarts[index].count * carts.shopCarts[index].orgPrice).toStringAsFixed(2)}',
                                       style: TextStyle(color: Colors.black54, fontSize: 14.0, decoration: TextDecoration.lineThrough),
                                     ),
-                                    InkWell(child: Icon(CupertinoIcons.delete, size: 32.0), onTap: () {
-                                      Provide.value<CartProvide>(context).removeCarts(carts.shopCarts[index].goodsId);
-                                    })
+                                    InkWell(
+                                        child: Icon(CupertinoIcons.delete, size: 32.0),
+                                        onTap: () {
+                                          Provide.value<CartProvide>(context).removeCarts(carts.shopCarts[index].goodsId);
+                                        })
                                   ],
                                 )
                               ],
@@ -141,35 +152,41 @@ class CartPage extends StatelessWidget {
 }
 
 class CartCountWidget extends StatelessWidget {
-  final int initCount;
+  final int count;
+  final String goodsId;
 
-  CartCountWidget({Key key, this.initCount}) : super(key: key);
+  CartCountWidget({Key key, this.count, this.goodsId}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var _controller = TextEditingController(text: '$initCount');
-
     return Container(
       width: 120.0,
-      height: 40.0,
+      height: 30.0,
       decoration: ShapeDecoration(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(2.0)), side: BorderSide(color: Colors.pink)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(2.0)), side: BorderSide(color: Colors.black54)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Expanded(child: Center(child: Text('-', style: TextStyle(fontSize: 20.0)))),
           Expanded(
-            child: Center(
-              child: TextField(
-                textAlign: TextAlign.center,
-                controller: _controller,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(border: InputBorder.none),
-              ),
-            ),
-          ),
-          Expanded(child: Center(child: Text('+', style: TextStyle(fontSize: 20.0)))),
+              child: InkWell(
+            onTap: count == 1 ? null : () => Provide.value<CartProvide>(context).increaseOrReduceOperation(goodsId, false),
+            child: DecoratedBox(
+                decoration: BoxDecoration(
+                  border: Border(right: BorderSide(color: Colors.black54, width: 1.0)),
+                ),
+                child: Center(child: Text('-', style: TextStyle(fontSize: 16.0, color: Colors.black)))),
+          )),
+          Expanded(child: Center(child: Text('$count', style: TextStyle(fontSize: 14.0, color: Colors.black))), flex: 2),
+          Expanded(
+              child: InkWell(
+            onTap: () => Provide.value<CartProvide>(context).increaseOrReduceOperation(goodsId, true),
+            child: DecoratedBox(
+                decoration: BoxDecoration(
+                  border: Border(left: BorderSide(color: Colors.black54, width: 1.0)),
+                ),
+                child: Center(child: Text('+', style: TextStyle(fontSize: 16.0, color: Colors.black)))),
+          ))
         ],
       ),
     );
