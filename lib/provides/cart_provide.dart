@@ -20,9 +20,7 @@ class CartProvide with ChangeNotifier {
     });
   }
 
-  saveCarts(GoodInfoBean info, int count) async {
-    _shopCartList = await restoreShopCarts();
-
+  saveCarts(GoodInfoBean info, int count) {
     List<dynamic> carts = _shopCartList == '[]' ? [] : json.decode(_shopCartList);
 
     var included = false;
@@ -45,6 +43,20 @@ class CartProvide with ChangeNotifier {
         'price': info.presentPrice,
         'count': count,
       });
+    }
+
+    PreferenceUtils.instance.saveString('shop_cart', json.encode(carts));
+    _shopCartList = json.encode(carts);
+    shopCarts.clear();
+    shopCarts.addAll(carts.isEmpty ? [] : CateEntity.fromJsonList(carts));
+    notifyListeners();
+  }
+
+  removeCarts(String goodsId) {
+    List<dynamic> carts = _shopCartList == '[]' ? [] : json.decode(_shopCartList);
+
+    if (carts.isNotEmpty) {
+      carts.removeWhere((e) => e['goodsId'] == goodsId);
     }
 
     PreferenceUtils.instance.saveString('shop_cart', json.encode(carts));

@@ -90,7 +90,9 @@ class CartPage extends StatelessWidget {
                                       '￥${1580.00}',
                                       style: TextStyle(color: Colors.black54, fontSize: 14.0, decoration: TextDecoration.lineThrough),
                                     ),
-                                    InkWell(child: Icon(CupertinoIcons.delete, size: 32.0), onTap: () {})
+                                    InkWell(child: Icon(CupertinoIcons.delete, size: 32.0), onTap: () {
+                                      Provide.value<CartProvide>(context).removeCarts(carts.shopCarts[index].goodsId);
+                                    })
                                   ],
                                 )
                               ],
