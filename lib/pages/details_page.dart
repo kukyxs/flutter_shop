@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_shop/provides/cart_count_provide.dart';
 import 'package:flutter_shop/provides/cart_provide.dart';
 import 'package:flutter_shop/provides/goods_detail_provide.dart';
 import 'package:flutter_shop/provides/page_provide.dart';
@@ -58,7 +59,6 @@ class NestedType extends StatelessWidget {
                                   _detail.data.goodInfo.goodsName,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(color: innerScrolled ? Colors.white : Colors.black),
                                 ),
                                 forceElevated: innerScrolled,
                                 // 折叠头部信息
@@ -180,7 +180,7 @@ class NestedType extends StatelessWidget {
         ),
         bottomNavigationBar: BottomAppBar(
             child: Container(
-          height: ScreenUtil().setHeight(100),
+          height: 60.0,
           child: Card(
             margin: const EdgeInsets.all(0.0),
             child: Row(children: <Widget>[
@@ -198,17 +198,76 @@ class NestedType extends StatelessWidget {
                         alignment: Alignment.center,
                         child: Text('加入购物车', style: TextStyle(color: Colors.white, fontSize: 18.0))),
                     onTap: () {
-                      Provide.value<CartProvide>(context).saveCarts(detailProvide.detail.data.goodInfo, 1);
-                      Scaffold.of(ctx).showSnackBar(SnackBar(
-                        content: Text('添加商品成功'),
-                        duration: Duration(milliseconds: 1250),
-                        action: SnackBarAction(
-                            label: '去购物车查看',
-                            onPressed: () {
-                              Navigator.pop(context);
-                              Provide.value<PageIndexProvide>(context).changePage(2);
-                            }),
-                      ));
+                      /// 加入购物车
+                      Provide.value<CartCountProvide>(context).initCount();
+                      showModalBottomSheet(
+                          context: ctx,
+                          builder: (context) => Provide<CartCountProvide>(builder: (_, child, cartCount) {
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                                  height: 100.0,
+                                  color: Colors.white,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Text('购买数量', style: TextStyle(color: Colors.black, fontSize: 12.0)),
+                                      Row(
+                                        children: <Widget>[
+                                          /// 数量部件
+                                          Container(
+                                            width: 120.0,
+                                            height: 30.0,
+                                            decoration: ShapeDecoration(
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.all(Radius.circular(2.0)), side: BorderSide(color: Colors.black54)),
+                                            ),
+                                            child: Row(
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: <Widget>[
+                                                Expanded(
+                                                    child: InkWell(
+                                                  onTap: cartCount.shopCount == 1 ? () {} : () => cartCount.decrease(),
+                                                  child: DecoratedBox(
+                                                      decoration: BoxDecoration(
+                                                        border: Border(right: BorderSide(color: Colors.black54, width: 1.0)),
+                                                      ),
+                                                      child: Center(child: Text('-', style: TextStyle(fontSize: 16.0, color: Colors.black)))),
+                                                )),
+                                                Expanded(
+                                                    child: Center(
+                                                        child: Text('${cartCount.shopCount}', style: TextStyle(fontSize: 14.0, color: Colors.black))),
+                                                    flex: 2),
+                                                Expanded(
+                                                    child: InkWell(
+                                                  onTap: () => cartCount.increase(),
+                                                  child: DecoratedBox(
+                                                      decoration: BoxDecoration(
+                                                        border: Border(left: BorderSide(color: Colors.black54, width: 1.0)),
+                                                      ),
+                                                      child: Center(child: Text('+', style: TextStyle(fontSize: 16.0, color: Colors.black)))),
+                                                ))
+                                              ],
+                                            ),
+                                          ),
+
+                                          /// 加入购物车按钮
+                                          Padding(
+                                            padding: const EdgeInsets.only(left: 30.0),
+                                            child: OutlineButton(
+                                                onPressed: () {
+                                                  Provide.value<CartProvide>(context)
+                                                      .saveCarts(detailProvide.detail.data.goodInfo, cartCount.shopCount);
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text('确定加入购物车')),
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                );
+                              }));
                     }),
               )),
               Expanded(
