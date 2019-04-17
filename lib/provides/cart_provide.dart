@@ -6,8 +6,17 @@ import '../entities/goods_detail.dart';
 import '../entities/cate_entity.dart';
 
 class CartProvide with ChangeNotifier {
+  bool _isAllChecked = false;
+  int _allSelectedCount = 0;
+  double _allSelectedPrice = 0.0;
   String _shopCartList = '[]';
   List<CateEntity> _shopCarts = [];
+
+  bool get allCheckedState => _isAllChecked;
+
+  int get allCheckedCount => _allSelectedCount;
+
+  double get allCheckedPrice => _allSelectedPrice;
 
   List<CateEntity> get shopCarts => _shopCarts;
 
@@ -16,6 +25,7 @@ class CartProvide with ChangeNotifier {
       _shopCartList = value;
       _shopCarts.clear();
       _shopCarts.addAll(_shopCartList == '[]' ? [] : CateEntity.fromJsonList(json.decode(_shopCartList)));
+      _allInfoStateCheck();
       notifyListeners();
     });
   }
@@ -42,14 +52,11 @@ class CartProvide with ChangeNotifier {
         'orgPrice': info.oriPrice,
         'price': info.presentPrice,
         'count': count,
+        'isChecked': true,
       });
     }
 
-    PreferenceUtils.instance.saveString('shop_cart', json.encode(carts));
-    _shopCartList = json.encode(carts);
-    shopCarts.clear();
-    shopCarts.addAll(carts.isEmpty ? [] : CateEntity.fromJsonList(carts));
-    notifyListeners();
+    _notifyChanges(carts);
   }
 
   increaseOrReduceOperation(String goodsId, bool isIncrease) {
@@ -65,11 +72,7 @@ class CartProvide with ChangeNotifier {
       }
     });
 
-    PreferenceUtils.instance.saveString('shop_cart', json.encode(carts));
-    _shopCartList = json.encode(carts);
-    shopCarts.clear();
-    shopCarts.addAll(carts.isEmpty ? [] : CateEntity.fromJsonList(carts));
-    notifyListeners();
+    _notifyChanges(carts);
   }
 
   removeCarts(String goodsId) {
@@ -79,11 +82,57 @@ class CartProvide with ChangeNotifier {
       carts.removeWhere((e) => e['goodsId'] == goodsId);
     }
 
+    _notifyChanges(carts);
+  }
+
+  changeCartState(String goodsId, bool checked) {
+    List<dynamic> carts = _shopCartList == '[]' ? [] : json.decode(_shopCartList);
+
+    if (carts.isNotEmpty) {
+      carts.forEach((cart) {
+        if (cart['goodsId'] == goodsId) {
+          cart['isChecked'] = checked;
+        }
+      });
+    }
+
+    _notifyChanges(carts);
+  }
+
+  allCheckStateChange(bool checkState) {
+    List<dynamic> carts = _shopCartList == '[]' ? [] : json.decode(_shopCartList);
+
+    if (carts.isNotEmpty) {
+      carts.forEach((cart) {
+        cart['isChecked'] = checkState;
+      });
+    }
+
+    _notifyChanges(carts);
+  }
+
+  _notifyChanges(List carts) {
     PreferenceUtils.instance.saveString('shop_cart', json.encode(carts));
     _shopCartList = json.encode(carts);
-    shopCarts.clear();
-    shopCarts.addAll(carts.isEmpty ? [] : CateEntity.fromJsonList(carts));
+    _shopCarts.clear();
+    _shopCarts.addAll(carts.isEmpty ? [] : CateEntity.fromJsonList(carts));
+    _allInfoStateCheck();
     notifyListeners();
+  }
+
+  void _allInfoStateCheck() {
+    _allSelectedCount = 0;
+    _allSelectedPrice = 0.0;
+    _isAllChecked = true;
+
+    _shopCarts.forEach((e) {
+      if (!e.isChecked) {
+        _isAllChecked = false;
+      } else {
+        _allSelectedCount += e.count;
+        _allSelectedPrice += e.count * e.price;
+      }
+    });
   }
 
   Future<String> restoreShopCarts() async {

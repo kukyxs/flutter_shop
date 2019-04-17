@@ -45,8 +45,8 @@ class CartPage extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text('共${5}件商品', style: TextStyle(color: Colors.black)),
-                                Text('小计：￥${1090.08}', style: TextStyle(color: Colors.red[700]))
+                                Text('共${carts.allCheckedCount}件商品', style: TextStyle(color: Colors.black)),
+                                Text('小计：￥${carts.allCheckedPrice}', style: TextStyle(color: Colors.red[700]))
                               ],
                             ),
                           );
@@ -57,7 +57,13 @@ class CartPage extends StatelessWidget {
                             padding: const EdgeInsets.all(12.0),
                             child: Row(
                               children: <Widget>[
-                                Checkbox(value: true, onChanged: (checkState) {}, activeColor: Colors.pink),
+                                Checkbox(
+                                    value: carts.shopCarts[index].isChecked,
+                                    onChanged: (checkState) {
+                                      // 修改商品选择状态
+                                      Provide.value<CartProvide>(context).changeCartState(carts.shopCarts[index].goodsId, checkState);
+                                    },
+                                    activeColor: Colors.pink),
                                 // 商品图标
                                 DecoratedBox(
                                   decoration: ShapeDecoration(shape: RoundedRectangleBorder(), color: Colors.black12),
@@ -121,7 +127,12 @@ class CartPage extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
                       height: 60.0,
                       child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: <Widget>[
-                        Checkbox(value: true, onChanged: (checkState) {}, activeColor: Colors.pink),
+                        Checkbox(
+                            value: carts.allCheckedState,
+                            onChanged: (checkState) {
+                              carts.allCheckStateChange(checkState);
+                            },
+                            activeColor: Colors.pink),
                         Text('全选', style: TextStyle(color: Colors.black, fontSize: 15.0)),
                         Expanded(
                             child: Container(
@@ -134,7 +145,7 @@ class CartPage extends StatelessWidget {
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: <Widget>[
                                         Text('合计：', style: TextStyle(color: Colors.black, fontSize: 18.0)),
-                                        Text('￥${1090.08}', style: TextStyle(color: Colors.red[700], fontSize: 16.0)),
+                                        Text('￥${carts.allCheckedPrice}', style: TextStyle(color: Colors.red[700], fontSize: 16.0)),
                                       ],
                                     ),
                                     Text('满10元免费配送，预购免费配送', style: TextStyle(color: Colors.black, fontSize: 10.0))
@@ -142,7 +153,7 @@ class CartPage extends StatelessWidget {
                                 ))),
                         RaisedButton(
                           onPressed: () {},
-                          child: Text('结算', style: TextStyle(color: Colors.white)),
+                          child: Text('结算(${carts.allCheckedCount})', style: TextStyle(color: Colors.white)),
                           color: Colors.pink,
                         )
                       ]),

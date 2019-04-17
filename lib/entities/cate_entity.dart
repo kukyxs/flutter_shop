@@ -5,8 +5,9 @@ class CateEntity {
   double orgPrice;
   double price;
   int count;
+  bool isChecked;
 
-  CateEntity({this.goodsName, this.goodsId, this.goodsImg, this.orgPrice, this.price, this.count});
+  CateEntity({this.goodsName, this.goodsId, this.goodsImg, this.orgPrice, this.price, this.count, this.isChecked});
 
   CateEntity.fromJson(Map<String, dynamic> json) {
     goodsName = json['goodsName'];
@@ -15,6 +16,7 @@ class CateEntity {
     orgPrice = json['orgPrice'] + 0.0;
     price = json['price'] + 0.0;
     count = json['count'];
+    isChecked = json['isChecked'];
   }
 
   static List<CateEntity> fromJsonList(dynamic maps) {
@@ -33,6 +35,7 @@ class CateEntity {
     data['orgPrice'] = this.orgPrice;
     data['price'] = this.price;
     data['count'] = this.count;
+    data['isChecked'] = this.isChecked;
     return data;
   }
 }
