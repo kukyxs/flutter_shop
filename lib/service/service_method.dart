@@ -5,17 +5,15 @@ import 'package:dio/dio.dart';
 
 import '../configs/service_url.dart';
 
-Future getHomePageContent() =>
-    request(servicePath['homePageContent'], formData: {'lon': '115.02932', 'lat': '35.76189'});
+Future getHomePageContent() => request(servicePath['homePageContent'], formData: {'lon': '115.02932', 'lat': '35.76189'});
 
 Future getHomePageHots(int page) => request(servicePath['homePageHotPart'], formData: {'page': page});
 
 Future getCategories() => request(servicePath['getCategory']);
 
 Future getMallGoods(String categoryId, String categorySubId, int page) => request(servicePath['getMallGoods'],
-    formData: categorySubId != null
-        ? {'categoryId': categoryId, 'categorySubId': categorySubId, 'page': page}
-        : {'categoryId': categoryId, 'page': page});
+    formData:
+        categorySubId != null ? {'categoryId': categoryId, 'categorySubId': categorySubId, 'page': page} : {'categoryId': categoryId, 'page': page});
 
 Future getGoodsDetail(String id) => request(servicePath['getGoodDetailById'], formData: {'goodId': id});
 

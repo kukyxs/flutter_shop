@@ -23,6 +23,7 @@ class SubCategoryProvide with ChangeNotifier {
 
   int get subIndex => _subIndex;
 
+  // 修改左侧栏
   void changeBxCategories(List<BxMallSubDtoListBean> categories) {
     BxMallSubDtoListBean allSubDto = BxMallSubDtoListBean()
       ..mallCategoryId = ''
@@ -39,16 +40,19 @@ class SubCategoryProvide with ChangeNotifier {
     notifyListeners();
   }
 
+  // 修改大类
   void changeCategory(String categoryId) {
     _categoryId = categoryId;
     notifyListeners();
   }
 
+  // 修改小类
   void changeSubCategorySelect(String subCategoryId) {
     _subCategoryId = subCategoryId;
     notifyListeners();
   }
 
+  // 小类 index
   void changeSubCategoryIndex(int index) {
     _subIndex = index;
     notifyListeners();

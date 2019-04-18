@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../entities/category_goods.dart';
 
+/// 分类页面商品列表加载
 class MallGoodsProvide with ChangeNotifier {
   var _page = 1;
 
@@ -19,12 +20,14 @@ class MallGoodsProvide with ChangeNotifier {
     _page = 1;
   }
 
+  // 更换商品大小类别调用
   void changeGoodsList(List<CategoryGoodsInfo> list) {
     _goodsList.clear();
     _goodsList.addAll(list);
     notifyListeners();
   }
 
+  // 上拉加载更多
   void loadMoreGoodsList(List<CategoryGoodsInfo> list) {
     _goodsList.addAll(list);
     notifyListeners();

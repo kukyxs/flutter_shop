@@ -6,15 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/ball_pulse_footer.dart';
 import 'package:flutter_easyrefresh/ball_pulse_header.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_shop/configs/application.dart';
-import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-import '../service/service_method.dart';
-import '../router/routers.dart';
-import '../configs/application.dart';
-import '../router/routers.dart';
+import 'package:flutter_shop/entities/home_page_entity.dart';
+import 'package:flutter_shop/entities/hot_goods.dart';
+import 'package:flutter_shop/pages/homepage/ad_banner.dart';
+import 'package:flutter_shop/pages/homepage/banner_diy.dart';
+import 'package:flutter_shop/pages/homepage/floor_part.dart';
+import 'package:flutter_shop/pages/homepage/hot_part.dart';
+import 'package:flutter_shop/pages/homepage/lead_phone.dart';
+import 'package:flutter_shop/pages/homepage/mall_recommend.dart';
+import 'package:flutter_shop/pages/homepage/top_nativator.dart';
+import 'package:flutter_shop/service/service_method.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -31,7 +32,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
   bool _isLoadingHots = false;
   bool _showBackTop = false;
   int _page = 0;
-  List _hots = [];
+  List<HotGoodsData> _hots = [];
 
   @override
   void initState() {
@@ -53,40 +54,14 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
       setState(() => _isLoadingHots = true);
 
       getHomePageHots(_page).then((val) {
-        print(json.decode(val.data));
         setState(() {
-          _hots.addAll(json.decode(val.data)['data']);
+          var e = HotGoodsEntity.fromJson(json.decode(val.data));
+          _hots.addAll(e.data);
           _page++;
           _isLoadingHots = false;
         });
       });
     }
-  }
-
-  Widget _hotItems(Map hot) {
-    return InkWell(
-        onTap: () {
-          Application.router.navigateTo(context, Routers.generateDetailsRouterPath(hot['goodsId']));
-        },
-        child: Container(
-            color: Colors.white,
-            margin: const EdgeInsets.only(left: 4.0, right: 4.0, bottom: 8.0),
-            padding: const EdgeInsets.all(4.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Image.network(hot['image']),
-                Text(hot['name'], textAlign: TextAlign.center, maxLines: 1),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Text('￥${hot['mallPrice']}'),
-                    Text('￥${hot['price']}',
-                        style: TextStyle(color: Colors.black45, decoration: TextDecoration.lineThrough))
-                  ],
-                )
-              ],
-            )));
   }
 
   @override
@@ -98,19 +73,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
           body: FutureBuilder(
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                var data = json.decode(snapshot.data.toString());
-                List<Map> bannerImages = (data['data']['slides'] as List).cast();
-                List<Map> categories = (data['data']['category'] as List).cast();
-                String bannerUrl = data['data']['advertesPicture']['PICTURE_ADDRESS'];
-                String leaderImage = data['data']['shopInfo']['leaderImage'];
-                String phone = data['data']['shopInfo']['leaderPhone'];
-                List<Map> recommendLists = (data['data']['recommend'] as List).cast();
-                String floor1Pic = data['data']['floor1Pic']['PICTURE_ADDRESS'];
-                List<Map> floor1 = (data['data']['floor1'] as List).cast();
-                String floor2Pic = data['data']['floor2Pic']['PICTURE_ADDRESS'];
-                List<Map> floor2 = (data['data']['floor2'] as List).cast();
-                String floor3Pic = data['data']['floor3Pic']['PICTURE_ADDRESS'];
-                List<Map> floor3 = (data['data']['floor3'] as List).cast();
+                var homeEntity = HomePageEntity.fromJson(json.decode(snapshot.data.toString()));
 
                 return EasyRefresh(
                     key: _refreshKey,
@@ -118,26 +81,24 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                     refreshFooter: BallPulseFooter(key: _footerKey, color: Colors.pink),
                     loadMore: () => _requestHots(),
                     child: CustomScrollView(
-                        controller: _outController,
-                        physics: BouncingScrollPhysics(),
-                        slivers: <Widget>[
-                          BannerDiy(bannerImages: bannerImages),
-                          TopNavigatorBar(categories: categories),
-                          AdBanner(bannerUrl: bannerUrl),
-                          LeaderPhone(imageUrl: leaderImage, phone: phone),
-                          RecommendWidget(recommendList: recommendLists),
-                          FloorTitle(floorPic: floor1Pic),
-                          FloorContent(floorContent: floor1),
-                          FloorTitle(floorPic: floor2Pic),
-                          FloorContent(floorContent: floor2),
-                          FloorTitle(floorPic: floor3Pic),
-                          FloorContent(floorContent: floor3),
-                          HotGoodsTitle(),
-                          SliverGrid.count(
-                              crossAxisCount: 2,
-                              childAspectRatio: 0.7,
-                              children: _hots.map((hot) => _hotItems(hot)).toList())
-                        ]));
+                      controller: _outController,
+                      physics: BouncingScrollPhysics(),
+                      slivers: <Widget>[
+                        BannerDiy(bannerImages: homeEntity.data.slides),
+                        TopNavigatorBar(categories: homeEntity.data.category),
+                        AdBanner(bannerUrl: homeEntity.data.advertesPicture.pICTUREADDRESS),
+                        LeaderPhone(imageUrl: homeEntity.data.shopInfo.leaderImage, phone: homeEntity.data.shopInfo.leaderPhone),
+                        RecommendWidget(recommendList: homeEntity.data.recommend),
+                        FloorTitle(floorPic: homeEntity.data.floor1Pic.pICTUREADDRESS),
+                        FloorContent(floorContent: homeEntity.data.floor1),
+                        FloorTitle(floorPic: homeEntity.data.floor2Pic.pICTUREADDRESS),
+                        FloorContent(floorContent: homeEntity.data.floor2),
+                        FloorTitle(floorPic: homeEntity.data.floor3Pic.pICTUREADDRESS),
+                        FloorContent(floorContent: homeEntity.data.floor3),
+                        HotGoodsTitle(),
+                        SliverGrid.count(crossAxisCount: 2, childAspectRatio: 0.7, children: _hots.map((hot) => HotItem(hot: hot)).toList())
+                      ],
+                    ));
               } else {
                 return Center(child: CupertinoActivityIndicator(radius: 12.0));
               }
@@ -146,224 +107,15 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
           ),
           floatingActionButton: _showBackTop
               ? FloatingActionButton(
-                  onPressed: () {
-                    _outController.animateTo(0.0, duration: Duration(milliseconds: 500), curve: Curves.decelerate);
-                  },
-                  mini: true,
-                  child: Icon(Icons.vertical_align_top))
+              onPressed: () {
+                _outController.animateTo(0.0, duration: Duration(milliseconds: 500), curve: Curves.decelerate);
+              },
+              mini: true,
+              child: Icon(Icons.vertical_align_top))
               : null,
         ));
   }
 
   @override
   bool get wantKeepAlive => true;
-}
-
-class BannerDiy extends StatelessWidget {
-  final List<Map> bannerImages;
-
-  BannerDiy({Key key, @required this.bannerImages}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-        child: Container(
-      height: ScreenUtil().setHeight(320),
-      child: Swiper(
-        itemCount: bannerImages.length,
-        itemBuilder: (context, int index) => InkWell(
-              child: Image.network('${bannerImages[index]['image']}', fit: BoxFit.fill),
-              onTap: () => Application.router
-                  .navigateTo(context, Routers.generateDetailsRouterPath(bannerImages[index]['goodsId'])),
-            ),
-        pagination: SwiperPagination(),
-        autoplay: true,
-      ),
-    ));
-  }
-}
-
-class TopNavigatorBar extends StatelessWidget {
-  final List<Map> categories;
-
-  TopNavigatorBar({Key key, @required this.categories}) : super(key: key);
-
-  Widget _buildCategoryItem(context, item) {
-    return InkWell(
-      onTap: () {},
-      child: Column(
-        children: [Image.network(item['image'], width: ScreenUtil().setWidth(95)), Text(item['mallCategoryName'])],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (categories.length > 10) categories.removeRange(10, categories.length);
-    return SliverToBoxAdapter(
-        child: Container(
-            alignment: Alignment.center,
-            height: ScreenUtil().setHeight(320),
-            child: Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: GridView.count(
-                physics: NeverScrollableScrollPhysics(),
-                crossAxisCount: 5,
-                children: categories.map((item) => _buildCategoryItem(context, item)).toList(),
-              ),
-            )));
-  }
-}
-
-class AdBanner extends StatelessWidget {
-  final String bannerUrl;
-
-  AdBanner({Key key, @required this.bannerUrl}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverToBoxAdapter(child: Container(child: Image.network(bannerUrl)));
-  }
-}
-
-class LeaderPhone extends StatelessWidget {
-  final String imageUrl;
-  final String phone;
-
-  LeaderPhone({Key key, @required this.imageUrl, @required this.phone}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-        child: Container(
-            child: InkWell(
-                child: Image.network(
-                  imageUrl,
-                  fit: BoxFit.cover,
-                ),
-                onTap: () async {
-                  var url = 'tel:$phone';
-                  var canLauncher = await canLaunch(url);
-                  if (canLauncher)
-                    launch(url);
-                  else
-                    print('url error');
-                })));
-  }
-}
-
-class RecommendWidget extends StatelessWidget {
-  final List recommendList;
-
-  RecommendWidget({Key key, @required this.recommendList}) : super(key: key);
-
-  Widget _recommendTitle() {
-    return Container(
-      alignment: Alignment.center,
-      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.black12, width: 1.0))),
-      child: Text('商品推荐', style: TextStyle(color: Colors.pink)),
-    );
-  }
-
-  Widget _recommendItem(BuildContext context, int index) {
-    return InkWell(
-        onTap: () {
-          Application.router.navigateTo(context, Routers.generateDetailsRouterPath(recommendList[index]['goodsId']));
-        },
-        child: Container(
-          width: ScreenUtil().setWidth(250),
-          height: ScreenUtil().setHeight(330),
-          decoration: BoxDecoration(border: Border(left: BorderSide(color: Colors.black12)), color: Colors.white),
-          child: Column(children: <Widget>[
-            Image.network(recommendList[index]['image'], height: ScreenUtil().setHeight(220)),
-            Text('￥${recommendList[index]['mallPrice']}'),
-            Text('￥${recommendList[index]['price']}',
-                style: TextStyle(
-                    decoration: TextDecoration.lineThrough,
-                    decorationStyle: TextDecorationStyle.double,
-                    decorationColor: Colors.red))
-          ]),
-        ));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-        child: Container(
-            margin: const EdgeInsets.only(top: 6.0),
-            child: Column(children: <Widget>[
-              _recommendTitle(),
-              Container(
-                height: ScreenUtil().setHeight(300),
-                child: ListView.builder(
-                    itemBuilder: _recommendItem,
-                    itemCount: this.recommendList.length,
-                    scrollDirection: Axis.horizontal),
-              )
-            ])));
-  }
-}
-
-class FloorTitle extends StatelessWidget {
-  final String floorPic;
-
-  FloorTitle({Key key, @required this.floorPic}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-        child: Container(child: Image.network(floorPic), padding: const EdgeInsets.symmetric(vertical: 12.0)));
-  }
-}
-
-class FloorContent extends StatelessWidget {
-  final List<Map> floorContent;
-
-  FloorContent({Key key, @required this.floorContent}) : super(key: key);
-
-  Widget _goodsImg(floorItem, context) {
-    return InkWell(
-        child: Image.network(floorItem['image'], width: ScreenUtil().setWidth(375)),
-        onTap: () => Application.router.navigateTo(context, Routers.generateDetailsRouterPath(floorItem['goodsId'])));
-  }
-
-  Widget _topRow(context) {
-    return Row(children: <Widget>[
-      _goodsImg(floorContent[0], context),
-      Column(children: <Widget>[
-        _goodsImg(floorContent[1], context),
-        _goodsImg(floorContent[2], context),
-      ])
-    ]);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-        child: InkWell(
-      child: Container(
-        child: Column(children: <Widget>[
-          _topRow(context),
-          Row(children: <Widget>[
-            _goodsImg(floorContent[3], context),
-            _goodsImg(floorContent[4], context),
-          ])
-        ]),
-      ),
-      onTap: () {},
-    ));
-  }
-}
-
-class HotGoodsTitle extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-        child: Container(
-      alignment: Alignment.center,
-      child: Text('火爆专区', style: TextStyle(color: Colors.black)),
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-    ));
-  }
 }

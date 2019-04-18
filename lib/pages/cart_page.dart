@@ -1,8 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_shop/provides/cart_provide.dart';
 import 'package:flutter_shop/provides/page_provide.dart';
 import 'package:provide/provide.dart';
-import 'package:flutter/cupertino.dart';
 
 class CartPage extends StatelessWidget {
   @override

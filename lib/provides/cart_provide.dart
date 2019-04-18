@@ -1,17 +1,18 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import '../utils/preference_utils.dart';
-import '../entities/goods_detail.dart';
+
 import '../entities/cate_entity.dart';
+import '../entities/goods_detail.dart';
+import '../utils/preference_utils.dart';
 
 class CartProvide with ChangeNotifier {
-  bool _isAllChecked = false;
-  int _allSelectedCount = 0;
-  int _allCartCount = 0;
-  double _allSelectedPrice = 0.0;
-  String _shopCartList = '[]';
-  List<CateEntity> _shopCarts = [];
+  bool _isAllChecked = false; // 是否全选
+  int _allSelectedCount = 0; // 选中的物品数量
+  int _allCartCount = 0; // 购物车内全部的物品数量
+  double _allSelectedPrice = 0.0; // 选中物品的全部价格
+  String _shopCartList = '[]'; // 用于持久化
+  List<CateEntity> _shopCarts = []; // 购物车物品列表
 
   bool get allCheckedState => _isAllChecked;
 
@@ -24,7 +25,7 @@ class CartProvide with ChangeNotifier {
   List<CateEntity> get shopCarts => _shopCarts;
 
   CartProvide() {
-    restoreShopCarts().then((value) {
+    PreferenceUtils.instance.getString('shop_cart', '[]').then((value) {
       _shopCartList = value;
       _shopCarts.clear();
       _shopCarts.addAll(_shopCartList == '[]' ? [] : CateEntity.fromJsonList(json.decode(_shopCartList)));
@@ -33,6 +34,7 @@ class CartProvide with ChangeNotifier {
     });
   }
 
+  /// 保存物品到购物车，可随意选择数量
   saveCarts(GoodInfoBean info, int count) {
     List<dynamic> carts = _shopCartList == '[]' ? [] : json.decode(_shopCartList);
 
@@ -40,6 +42,7 @@ class CartProvide with ChangeNotifier {
 
     if (carts.isNotEmpty) {
       carts.forEach((cart) {
+        // 不是空列表的情况下，判断是否已经存在该物品，存在则添加，并设置状态位
         if (cart['goodsId'] == info.goodsId) {
           cart['count'] += count;
           included = true;
@@ -47,6 +50,7 @@ class CartProvide with ChangeNotifier {
       });
     }
 
+    // 不存在该商品的时候则全部加入到列表
     if (!included) {
       carts.add({
         'goodsName': info.goodsName,
@@ -62,9 +66,11 @@ class CartProvide with ChangeNotifier {
     _notifyChanges(carts);
   }
 
+  /// 增加/减少商品数量
   increaseOrReduceOperation(String goodsId, bool isIncrease) {
     List<dynamic> carts = json.decode(_shopCartList);
 
+    // 已经存在的情况下才增加减少，修改数量值
     carts.forEach((cart) {
       if (cart['goodsId'] == goodsId) {
         if (isIncrease) {
@@ -78,6 +84,7 @@ class CartProvide with ChangeNotifier {
     _notifyChanges(carts);
   }
 
+  /// 移除购物车内的某个商品
   removeCarts(String goodsId) {
     List<dynamic> carts = _shopCartList == '[]' ? [] : json.decode(_shopCartList);
 
@@ -88,6 +95,7 @@ class CartProvide with ChangeNotifier {
     _notifyChanges(carts);
   }
 
+  /// 修改特定商品在购物车的选中状态
   changeCartState(String goodsId, bool checked) {
     List<dynamic> carts = _shopCartList == '[]' ? [] : json.decode(_shopCartList);
 
@@ -102,18 +110,20 @@ class CartProvide with ChangeNotifier {
     _notifyChanges(carts);
   }
 
+  /// 全选状态修改
   allCheckStateChange(bool checkState) {
     List<dynamic> carts = _shopCartList == '[]' ? [] : json.decode(_shopCartList);
 
     if (carts.isNotEmpty) {
       carts.forEach((cart) {
-        cart['isChecked'] = checkState;
+        cart['isChecked'] = checkState; // 所有状态跟随全选修改
       });
     }
 
     _notifyChanges(carts);
   }
 
+  /// 更新购物车状态封装方法
   _notifyChanges(List carts) {
     PreferenceUtils.instance.saveString('shop_cart', json.encode(carts));
     _shopCartList = json.encode(carts);
@@ -123,6 +133,7 @@ class CartProvide with ChangeNotifier {
     notifyListeners();
   }
 
+  /// 数量，全选状态修改封装
   void _allInfoStateCheck() {
     _allCartCount = 0;
     _allSelectedCount = 0;
@@ -130,17 +141,13 @@ class CartProvide with ChangeNotifier {
     _isAllChecked = true;
 
     _shopCarts.forEach((e) {
-      _allCartCount += e.count;
+      _allCartCount += e.count; // 全部数量
       if (!e.isChecked) {
-        _isAllChecked = false;
+        _isAllChecked = false; // 如果一个未选中，则全选为 false
       } else {
         _allSelectedCount += e.count;
         _allSelectedPrice += e.count * e.price;
       }
     });
-  }
-
-  Future<String> restoreShopCarts() async {
-    return PreferenceUtils.instance.getString('shop_cart', '[]');
   }
 }
