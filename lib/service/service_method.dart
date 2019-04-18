@@ -30,7 +30,6 @@ Future request(String url, {Map formData}) async {
       response = await dio.post(url, data: formData);
     }
     if (response.statusCode == 200) {
-      print(response.data.toString());
       return response;
     } else {
       throw Exception('Net Error');

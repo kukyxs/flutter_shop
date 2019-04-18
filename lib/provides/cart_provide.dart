@@ -8,11 +8,14 @@ import '../entities/cate_entity.dart';
 class CartProvide with ChangeNotifier {
   bool _isAllChecked = false;
   int _allSelectedCount = 0;
+  int _allCartCount = 0;
   double _allSelectedPrice = 0.0;
   String _shopCartList = '[]';
   List<CateEntity> _shopCarts = [];
 
   bool get allCheckedState => _isAllChecked;
+
+  int get allCartCount => _allCartCount;
 
   int get allCheckedCount => _allSelectedCount;
 
@@ -121,11 +124,13 @@ class CartProvide with ChangeNotifier {
   }
 
   void _allInfoStateCheck() {
+    _allCartCount = 0;
     _allSelectedCount = 0;
     _allSelectedPrice = 0.0;
     _isAllChecked = true;
 
     _shopCarts.forEach((e) {
+      _allCartCount += e.count;
       if (!e.isChecked) {
         _isAllChecked = false;
       } else {

@@ -184,12 +184,28 @@ class NestedType extends StatelessWidget {
           child: Card(
             margin: const EdgeInsets.all(0.0),
             child: Row(children: <Widget>[
-              IconButton(
-                  icon: Icon(CupertinoIcons.shopping_cart, size: 32.0, color: Colors.pink),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Provide.value<PageIndexProvide>(context).changePage(2);
-                  }),
+              Stack(
+                alignment: Alignment.topRight,
+                children: <Widget>[
+                  IconButton(
+                      icon: Icon(CupertinoIcons.shopping_cart, size: 32.0, color: Colors.pink),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Provide.value<PageIndexProvide>(context).changePage(2);
+                      }),
+                  Provide<CartProvide>(
+                      builder: (_, child, carts) => DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: Colors.pink,
+                              borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(2.0),
+                              child: Text('${carts.allCartCount}', style: TextStyle(color: Colors.white)),
+                            ),
+                          ))
+                ],
+              ),
               Expanded(
                   child: Builder(
                 builder: (ctx) => InkWell(
