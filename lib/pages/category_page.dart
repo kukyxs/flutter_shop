@@ -9,8 +9,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provide/provide.dart';
 
 import '../configs/application.dart';
-import '../entities/category.dart';
-import '../entities/category_goods.dart';
+import '../entities/category_entity.dart';
+import '../entities/category_goods_entity.dart';
 import '../provides/mall_goods_provide.dart';
 import '../provides/sub_category_provide.dart';
 import '../router/routers.dart';
@@ -62,7 +62,7 @@ class _CategoryPageState extends State<CategoryPage> {
       Map<String, dynamic> jsonFormat = json.decode(response.data);
       // 返回有数据才解析
       if (jsonFormat['data'] != null) {
-        CategoryGoodsBean goods = CategoryGoodsBean.fromMap(jsonFormat);
+        CategoryGoodsEntity goods = CategoryGoodsEntity.fromMap(jsonFormat);
         if (Provide.value<MallGoodsProvide>(context).page == 1) {
           Provide.value<MallGoodsProvide>(context).changeGoodsList(goods.data);
         } else {

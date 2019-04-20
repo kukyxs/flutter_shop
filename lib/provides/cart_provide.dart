@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-import '../entities/cate_entity.dart';
-import '../entities/goods_detail.dart';
+import '../entities/shopping_cart_entity.dart';
+import '../entities/goods_detail_entity.dart';
 import '../utils/preference_utils.dart';
 
 class CartProvide with ChangeNotifier {
@@ -12,7 +12,7 @@ class CartProvide with ChangeNotifier {
   int _allCartCount = 0; // 购物车内全部的物品数量
   double _allSelectedPrice = 0.0; // 选中物品的全部价格
   String _shopCartList = '[]'; // 用于持久化
-  List<CateEntity> _shopCarts = []; // 购物车物品列表
+  List<ShoppingCartEntity> _shopCarts = []; // 购物车物品列表
 
   bool get allCheckedState => _isAllChecked;
 
@@ -22,13 +22,13 @@ class CartProvide with ChangeNotifier {
 
   double get allCheckedPrice => _allSelectedPrice;
 
-  List<CateEntity> get shopCarts => _shopCarts;
+  List<ShoppingCartEntity> get shopCarts => _shopCarts;
 
   CartProvide() {
     PreferenceUtils.instance.getString('shop_cart', '[]').then((value) {
       _shopCartList = value;
       _shopCarts.clear();
-      _shopCarts.addAll(_shopCartList == '[]' ? [] : CateEntity.fromJsonList(json.decode(_shopCartList)));
+      _shopCarts.addAll(_shopCartList == '[]' ? [] : ShoppingCartEntity.fromJsonList(json.decode(_shopCartList)));
       _allInfoStateCheck();
       notifyListeners();
     });
@@ -128,7 +128,7 @@ class CartProvide with ChangeNotifier {
     PreferenceUtils.instance.saveString('shop_cart', json.encode(carts));
     _shopCartList = json.encode(carts);
     _shopCarts.clear();
-    _shopCarts.addAll(carts.isEmpty ? [] : CateEntity.fromJsonList(carts));
+    _shopCarts.addAll(carts.isEmpty ? [] : ShoppingCartEntity.fromJsonList(carts));
     _allInfoStateCheck();
     notifyListeners();
   }

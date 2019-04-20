@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../entities/category_goods.dart';
+import '../entities/category_goods_entity.dart';
 
 /// 分类页面商品列表加载
 class MallGoodsProvide with ChangeNotifier {

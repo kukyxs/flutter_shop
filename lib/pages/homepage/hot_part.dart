@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_shop/configs/application.dart';
-import 'package:flutter_shop/entities/hot_goods.dart';
+import 'package:flutter_shop/entities/hot_goods_entity.dart';
 import 'package:flutter_shop/router/routers.dart';
 
 /// 火爆专区标题

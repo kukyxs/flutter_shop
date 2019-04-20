@@ -1,4 +1,4 @@
-class CateEntity {
+class ShoppingCartEntity {
   String goodsName;
   String goodsId;
   String goodsImg;
@@ -7,9 +7,9 @@ class CateEntity {
   int count;
   bool isChecked;
 
-  CateEntity({this.goodsName, this.goodsId, this.goodsImg, this.orgPrice, this.price, this.count, this.isChecked});
+  ShoppingCartEntity({this.goodsName, this.goodsId, this.goodsImg, this.orgPrice, this.price, this.count, this.isChecked});
 
-  CateEntity.fromJson(Map<String, dynamic> json) {
+  ShoppingCartEntity.fromJson(Map<String, dynamic> json) {
     goodsName = json['goodsName'];
     goodsId = json['goodsId'];
     goodsImg = json['goodsImg'];
@@ -19,10 +19,10 @@ class CateEntity {
     isChecked = json['isChecked'];
   }
 
-  static List<CateEntity> fromJsonList(dynamic maps) {
-    List<CateEntity> list = List(maps.length);
+  static List<ShoppingCartEntity> fromJsonList(dynamic maps) {
+    List<ShoppingCartEntity> list = List(maps.length);
     for (int i = 0; i < maps.length; i++) {
-      list[i] = CateEntity.fromJson(maps[i]);
+      list[i] = ShoppingCartEntity.fromJson(maps[i]);
     }
     return list;
   }

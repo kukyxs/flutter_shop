@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_shop/configs/service_url.dart';
 import 'package:flutter_shop/entities/home_page_entity.dart';
-import 'package:flutter_shop/entities/hot_goods.dart';
+import 'package:flutter_shop/entities/hot_goods_entity.dart';
 import 'package:flutter_shop/service/service_method.dart';
 
 class HomeProvide with ChangeNotifier {
@@ -16,13 +19,13 @@ class HomeProvide with ChangeNotifier {
   bool get showBack => _showBack;
 
   initHomeEntity() async {
-    _homeEntity = await getHomePageContent();
+    _homeEntity = await _getHomePageContent();
     notifyListeners();
   }
 
   initHotGoodsList() async {
     _page = 0;
-    var hot = await getHomePageHots(_page);
+    var hot = await _getHomePageHots(_page);
     _hotGoodsList.clear();
     _hotGoodsList.addAll(hot.data);
     notifyListeners();
@@ -30,7 +33,7 @@ class HomeProvide with ChangeNotifier {
 
   loadMoreHotGoods() async {
     _page++;
-    var moreHot = await getHomePageHots(_page);
+    var moreHot = await _getHomePageHots(_page);
     _hotGoodsList.addAll(moreHot.data);
     notifyListeners();
   }
@@ -38,5 +41,15 @@ class HomeProvide with ChangeNotifier {
   enableBack(bool state) {
     _showBack = state;
     notifyListeners();
+  }
+
+  Future<HomePageEntity> _getHomePageContent() async {
+    var response = await request(servicePath['homePageContent'], formData: {'lon': '115.02932', 'lat': '35.76189'});
+    return HomePageEntity.fromJson(json.decode(response.data.toString()));
+  }
+
+  Future<HotGoodsEntity> _getHomePageHots(int page) async {
+    var response = await request(servicePath['homePageHotPart'], formData: {'page': page});
+    return HotGoodsEntity.fromJson(json.decode(response.data));
   }
 }

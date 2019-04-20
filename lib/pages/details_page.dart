@@ -10,7 +10,7 @@ import 'package:flutter_shop/provides/goods_detail_provide.dart';
 import 'package:flutter_shop/provides/page_provide.dart';
 import 'package:provide/provide.dart';
 
-import '../entities/goods_detail.dart';
+import '../entities/goods_detail_entity.dart';
 import '../service/service_method.dart';
 
 class DetailsPage extends StatelessWidget {
@@ -21,7 +21,7 @@ class DetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    getGoodsDetail(goodsId).then((val) => Provide.value<GoodsDetailProvide>(context).changeDetails(GoodsDetailModel.fromMap(json.decode(val.data))));
+    getGoodsDetail(goodsId).then((val) => Provide.value<GoodsDetailProvide>(context).changeDetails(GoodsDetailEntity.fromMap(json.decode(val.data))));
     Provide.value<GoodsDetailProvide>(context).changeIndex(0);
 
     return NestedType(tabs: _tabs);

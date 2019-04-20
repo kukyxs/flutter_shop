@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../entities/category.dart';
+import '../entities/category_entity.dart';
 
 class SubCategoryProvide with ChangeNotifier {
   // 商品列表

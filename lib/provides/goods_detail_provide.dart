@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-import '../entities/goods_detail.dart';
+import '../entities/goods_detail_entity.dart';
 
 class GoodsDetailProvide with ChangeNotifier {
-  GoodsDetailModel _detail; // 商品详情
+  GoodsDetailEntity _detail; // 商品详情
   int _detailIndex; // 详情页的 tabIndex
 
-  GoodsDetailModel get detail => _detail;
+  GoodsDetailEntity get detail => _detail;
 
   int get detailIndex => _detailIndex;
 
-  changeDetails(GoodsDetailModel detail) {
+  changeDetails(GoodsDetailEntity detail) {
     _detail = detail;
     notifyListeners();
   }

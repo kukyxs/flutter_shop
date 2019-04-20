@@ -1,22 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter_shop/entities/home_page_entity.dart';
-import 'package:flutter_shop/entities/hot_goods.dart';
 
 import '../configs/service_url.dart';
-
-Future<HomePageEntity> getHomePageContent() async {
-  var response = await request(servicePath['homePageContent'], formData: {'lon': '115.02932', 'lat': '35.76189'});
-  return HomePageEntity.fromJson(json.decode(response.data.toString()));
-}
-
-Future<HotGoodsEntity> getHomePageHots(int page) async {
-  var response = await request(servicePath['homePageHotPart'], formData: {'page': page});
-  return HotGoodsEntity.fromJson(json.decode(response.data));
-}
 
 Future<Response> getCategories() => request(servicePath['getCategory']);
 

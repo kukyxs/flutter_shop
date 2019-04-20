@@ -1,18 +1,18 @@
-class CategoryGoodsBean {
+class CategoryGoodsEntity {
   String code;
   String message;
   List<CategoryGoodsInfo> data;
 
-  static CategoryGoodsBean fromMap(Map<String, dynamic> map) {
-    CategoryGoodsBean bean = new CategoryGoodsBean();
+  static CategoryGoodsEntity fromMap(Map<String, dynamic> map) {
+    CategoryGoodsEntity bean = new CategoryGoodsEntity();
     bean.code = map['code'];
     bean.message = map['message'];
     bean.data = CategoryGoodsInfo.fromMapList(map['data']);
     return bean;
   }
 
-  static List<CategoryGoodsBean> fromMapList(dynamic mapList) {
-    List<CategoryGoodsBean> list = new List(mapList.length);
+  static List<CategoryGoodsEntity> fromMapList(dynamic mapList) {
+    List<CategoryGoodsEntity> list = new List(mapList.length);
     for (int i = 0; i < mapList.length; i++) {
       list[i] = fromMap(mapList[i]);
     }
