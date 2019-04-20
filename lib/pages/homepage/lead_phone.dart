@@ -15,12 +15,7 @@ class LeaderPhone extends StatelessWidget {
           child: Image.network(imageUrl, fit: BoxFit.cover),
           onTap: () async {
             var url = 'tel:$phone';
-            var canLauncher = await canLaunch(url);
-            if (canLauncher) {
-              launch(url);
-            } else {
-              print('url error');
-            }
+            if (await canLaunch(url)) launch(url);
           }),
     ));
   }

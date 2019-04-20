@@ -21,7 +21,7 @@ class CategoryPage extends StatefulWidget {
   _CategoryPageState createState() => _CategoryPageState();
 }
 
-class _CategoryPageState extends State<CategoryPage> with AutomaticKeepAliveClientMixin {
+class _CategoryPageState extends State<CategoryPage> {
   List<CategoryData> categories = <CategoryData>[];
   GlobalKey<EasyRefreshState> _refreshKey = GlobalKey();
   GlobalKey<RefreshHeaderState> _headerKey = GlobalKey();
@@ -30,9 +30,6 @@ class _CategoryPageState extends State<CategoryPage> with AutomaticKeepAliveClie
   ScrollController _topNavController = ScrollController();
   int selectPosition = 0;
   int page = 0;
-
-  @override
-  bool get wantKeepAlive => true;
 
   @override
   void initState() {

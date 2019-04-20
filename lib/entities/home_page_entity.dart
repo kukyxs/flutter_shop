@@ -303,44 +303,6 @@ class Floor {
   }
 }
 
-//class Floor2 {
-//  String image;
-//  String goodsId;
-//
-//  Floor2({this.image, this.goodsId});
-//
-//  Floor2.fromJson(Map<String, dynamic> json) {
-//    image = json['image'];
-//    goodsId = json['goodsId'];
-//  }
-//
-//  Map<String, dynamic> toJson() {
-//    final Map<String, dynamic> data = new Map<String, dynamic>();
-//    data['image'] = this.image;
-//    data['goodsId'] = this.goodsId;
-//    return data;
-//  }
-//}
-//
-//class Floor3 {
-//  String image;
-//  String goodsId;
-//
-//  Floor3({this.image, this.goodsId});
-//
-//  Floor3.fromJson(Map<String, dynamic> json) {
-//    image = json['image'];
-//    goodsId = json['goodsId'];
-//  }
-//
-//  Map<String, dynamic> toJson() {
-//    final Map<String, dynamic> data = new Map<String, dynamic>();
-//    data['image'] = this.image;
-//    data['goodsId'] = this.goodsId;
-//    return data;
-//  }
-//}
-
 class Saoma {
   String pICTUREADDRESS;
   String tOPLACE;

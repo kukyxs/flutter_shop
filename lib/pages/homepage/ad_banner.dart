@@ -7,6 +7,6 @@ class AdBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverToBoxAdapter(child: Container(child: Image.network(bannerUrl)));
+    return SliverToBoxAdapter(child: Image.network(bannerUrl));
   }
 }

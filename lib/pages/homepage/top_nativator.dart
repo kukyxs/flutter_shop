@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shop/entities/home_page_entity.dart';
+import 'package:flutter_shop/provides/page_provide.dart';
+import 'package:provide/provide.dart';
 
 class TopNavigatorBar extends StatelessWidget {
   final List<Category> categories;
@@ -9,9 +10,18 @@ class TopNavigatorBar extends StatelessWidget {
 
   Widget _buildCategoryItem(BuildContext context, Category item) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        Provide.value<PageIndexProvide>(context).changePage(1);
+      },
       child: Column(
-        children: [Image.network(item.image, width: ScreenUtil().setWidth(95)), Text(item.mallCategoryName)],
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.network(item.image, width: MediaQuery.of(context).size.width / 8),
+          Padding(
+            padding: const EdgeInsets.only(top: 4.0),
+            child: Text(item.mallCategoryName, style: TextStyle(color: Colors.black)),
+          ),
+        ],
       ),
     );
   }
@@ -20,16 +30,16 @@ class TopNavigatorBar extends StatelessWidget {
   Widget build(BuildContext context) {
     if (categories.length > 10) categories.removeRange(10, categories.length);
     return SliverToBoxAdapter(
-        child: Container(
-            alignment: Alignment.center,
-            height: ScreenUtil().setHeight(320),
-            child: Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: GridView.count(
-                physics: NeverScrollableScrollPhysics(),
-                crossAxisCount: 5,
-                children: categories.map((item) => _buildCategoryItem(context, item)).toList(),
-              ),
-            )));
+      child: SizedBox(
+        height: MediaQuery.of(context).size.width * 2 / 5,
+        child: GridView.count(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+          childAspectRatio: 1.0,
+          physics: NeverScrollableScrollPhysics(),
+          crossAxisCount: 5,
+          children: categories.map((item) => _buildCategoryItem(context, item)).toList(),
+        ),
+      ),
+    );
   }
 }

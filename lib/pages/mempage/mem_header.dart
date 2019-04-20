@@ -7,7 +7,7 @@ class MemHeader extends StatelessWidget {
       alignment: Alignment.center,
       padding: const EdgeInsets.symmetric(vertical: 40.0),
       decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [Colors.blue[200], Colors.pink[200]]),
+        gradient: LinearGradient(colors: [Colors.pink[300], Colors.blue[100]], begin: Alignment.topCenter, end: Alignment.bottomCenter),
       ),
       child: Column(
         children: <Widget>[

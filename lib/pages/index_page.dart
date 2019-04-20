@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shop/pages/cart_page.dart';
 import 'package:flutter_shop/pages/category_page.dart';
-import 'package:flutter_shop/pages/home_page.dart';
-import 'package:flutter_shop/pages/mem_page.dart';
+import 'package:flutter_shop/pages/homepage/home_page.dart';
+import 'package:flutter_shop/pages/mempage/mem_page.dart';
 import 'package:flutter_shop/provides/page_provide.dart';
 import 'package:provide/provide.dart';
 

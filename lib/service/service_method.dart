@@ -1,23 +1,32 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter_shop/entities/home_page_entity.dart';
+import 'package:flutter_shop/entities/hot_goods.dart';
 
 import '../configs/service_url.dart';
 
-Future getHomePageContent() => request(servicePath['homePageContent'], formData: {'lon': '115.02932', 'lat': '35.76189'});
+Future<HomePageEntity> getHomePageContent() async {
+  var response = await request(servicePath['homePageContent'], formData: {'lon': '115.02932', 'lat': '35.76189'});
+  return HomePageEntity.fromJson(json.decode(response.data.toString()));
+}
 
-Future getHomePageHots(int page) => request(servicePath['homePageHotPart'], formData: {'page': page});
+Future<HotGoodsEntity> getHomePageHots(int page) async {
+  var response = await request(servicePath['homePageHotPart'], formData: {'page': page});
+  return HotGoodsEntity.fromJson(json.decode(response.data));
+}
 
-Future getCategories() => request(servicePath['getCategory']);
+Future<Response> getCategories() => request(servicePath['getCategory']);
 
-Future getMallGoods(String categoryId, String categorySubId, int page) => request(servicePath['getMallGoods'],
+Future<Response> getMallGoods(String categoryId, String categorySubId, int page) => request(servicePath['getMallGoods'],
     formData:
         categorySubId != null ? {'categoryId': categoryId, 'categorySubId': categorySubId, 'page': page} : {'categoryId': categoryId, 'page': page});
 
-Future getGoodsDetail(String id) => request(servicePath['getGoodDetailById'], formData: {'goodId': id});
+Future<Response> getGoodsDetail(String id) => request(servicePath['getGoodDetailById'], formData: {'goodId': id});
 
-Future request(String url, {Map formData}) async {
+Future<Response> request(String url, {Map formData}) async {
   try {
     Response response;
     Dio dio = Dio();
@@ -33,6 +42,7 @@ Future request(String url, {Map formData}) async {
       throw Exception('Net Error');
     }
   } catch (e) {
-    return print('ERROR: $e');
+    print('ERROR: $e');
+    return null;
   }
 }

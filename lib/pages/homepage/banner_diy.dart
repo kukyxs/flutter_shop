@@ -13,17 +13,18 @@ class BannerDiy extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
-        child: Container(
-      height: ScreenUtil().setHeight(320),
-      child: Swiper(
-        itemCount: bannerImages.length,
-        itemBuilder: (context, int index) => InkWell(
-              child: Image.network('${bannerImages[index].image}', fit: BoxFit.fill),
-              onTap: () => Application.router.navigateTo(context, Routers.generateDetailsRouterPath(bannerImages[index].goodsId)),
-            ),
-        pagination: SwiperPagination(),
-        autoplay: true,
+      child: Container(
+        height: 180.0,
+        child: Swiper(
+          itemCount: bannerImages.length,
+          itemBuilder: (context, int index) => InkWell(
+                child: Image.network('${bannerImages[index].image}', fit: BoxFit.fill),
+                onTap: () => Application.router.navigateTo(context, Routers.generateDetailsRouterPath(bannerImages[index].goodsId)),
+              ),
+          pagination: SwiperPagination(),
+          autoplay: true,
+        ),
       ),
-    ));
+    );
   }
 }
