@@ -2,8 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-
-import '../configs/service_url.dart';
+import 'package:flutter_shop/configs/service_url.dart';
 
 Future<Response> getCategories() => request(servicePath['getCategory']);
 

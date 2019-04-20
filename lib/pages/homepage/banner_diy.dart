@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shop/configs/application.dart';
 import 'package:flutter_shop/entities/home_page_entity.dart';
 import 'package:flutter_shop/router/routers.dart';

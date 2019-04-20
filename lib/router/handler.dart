@@ -1,7 +1,6 @@
 import 'package:fluro/fluro.dart';
-
-import '../pages/details_page.dart';
-import '../pages/index_page.dart';
+import 'package:flutter_shop/pages/details_page.dart';
+import 'package:flutter_shop/pages/index_page.dart';
 
 Handler rootHandler = new Handler(handlerFunc: (_, params) => IndexPage());
 

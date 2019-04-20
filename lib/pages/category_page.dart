@@ -5,16 +5,15 @@ import 'package:flutter_easyrefresh/ball_pulse_footer.dart';
 import 'package:flutter_easyrefresh/ball_pulse_header.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_shop/configs/application.dart';
+import 'package:flutter_shop/entities/category_entity.dart';
+import 'package:flutter_shop/entities/category_goods_entity.dart';
+import 'package:flutter_shop/provides/mall_goods_provide.dart';
+import 'package:flutter_shop/provides/sub_category_provide.dart';
+import 'package:flutter_shop/router/routers.dart';
+import 'package:flutter_shop/service/service_method.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provide/provide.dart';
-
-import '../configs/application.dart';
-import '../entities/category_entity.dart';
-import '../entities/category_goods_entity.dart';
-import '../provides/mall_goods_provide.dart';
-import '../provides/sub_category_provide.dart';
-import '../router/routers.dart';
-import '../service/service_method.dart';
 
 class CategoryPage extends StatefulWidget {
   @override

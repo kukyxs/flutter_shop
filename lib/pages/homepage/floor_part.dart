@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shop/configs/application.dart';
 import 'package:flutter_shop/entities/home_page_entity.dart';
 import 'package:flutter_shop/router/routers.dart';
@@ -22,7 +21,7 @@ class FloorContent extends StatelessWidget {
 
   Widget _goodsImg(Floor floorItem, context) {
     return InkWell(
-        child: Image.network(floorItem.image, width: ScreenUtil().setWidth(375)),
+        child: Image.network(floorItem.image, width: MediaQuery.of(context).size.width / 2),
         onTap: () => Application.router.navigateTo(context, Routers.generateDetailsRouterPath(floorItem.goodsId)));
   }
 

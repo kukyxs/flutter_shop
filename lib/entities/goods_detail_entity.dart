@@ -45,6 +45,7 @@ class GoodsDetailInfo {
 class AdvertesPictureBean {
   // ignore: non_constant_identifier_names
   String PICTURE_ADDRESS;
+
   // ignore: non_constant_identifier_names
   String TO_PLACE;
 
@@ -115,6 +116,7 @@ class GoodInfoBean {
 class GoodCommentsListBean {
   String comments;
   String userName;
+
   // ignore: non_constant_identifier_names
   int SCORE;
   int discussTime;

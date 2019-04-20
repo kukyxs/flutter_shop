@@ -1,10 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-
-import '../entities/shopping_cart_entity.dart';
-import '../entities/goods_detail_entity.dart';
-import '../utils/preference_utils.dart';
+import 'package:flutter_shop/entities/goods_detail_entity.dart';
+import 'package:flutter_shop/entities/shopping_cart_entity.dart';
+import 'package:flutter_shop/utils/preference_utils.dart';
 
 class CartProvide with ChangeNotifier {
   bool _isAllChecked = false; // 是否全选

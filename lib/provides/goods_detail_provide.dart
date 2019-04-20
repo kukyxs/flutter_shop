@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../entities/goods_detail_entity.dart';
+import 'package:flutter_shop/entities/goods_detail_entity.dart';
 
 class GoodsDetailProvide with ChangeNotifier {
   GoodsDetailEntity _detail; // 商品详情

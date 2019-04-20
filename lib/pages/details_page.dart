@@ -4,14 +4,13 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_shop/entities/goods_detail_entity.dart';
 import 'package:flutter_shop/provides/cart_count_provide.dart';
 import 'package:flutter_shop/provides/cart_provide.dart';
 import 'package:flutter_shop/provides/goods_detail_provide.dart';
 import 'package:flutter_shop/provides/page_provide.dart';
+import 'package:flutter_shop/service/service_method.dart';
 import 'package:provide/provide.dart';
-
-import '../entities/goods_detail_entity.dart';
-import '../service/service_method.dart';
 
 class DetailsPage extends StatelessWidget {
   final String goodsId;
