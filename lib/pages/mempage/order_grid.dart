@@ -7,7 +7,7 @@ class OrderGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 80.0,
+      height: MediaQuery.of(context).size.width / 4,
       child: GridView.count(
         crossAxisCount: _icons.length,
         children: List.generate(
