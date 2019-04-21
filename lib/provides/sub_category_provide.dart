@@ -23,7 +23,7 @@ class SubCategoryProvide with ChangeNotifier {
   int get subIndex => _subIndex;
 
   // 修改左侧栏
-  void changeBxCategories(List<BxMallSubDtoListBean> categories) {
+  void changeLeftHeadCategories(List<BxMallSubDtoListBean> categories) {
     BxMallSubDtoListBean allSubDto = BxMallSubDtoListBean()
       ..mallCategoryId = ''
       ..mallSubId = null
