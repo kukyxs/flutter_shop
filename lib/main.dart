@@ -7,7 +7,7 @@ import 'package:flutter_shop/configs/application.dart';
 import 'package:flutter_shop/provides/cart_count_provide.dart';
 import 'package:flutter_shop/provides/cart_provide.dart';
 import 'package:flutter_shop/provides/home_provide.dart';
-import 'package:flutter_shop/provides/page_provide.dart';
+import 'package:flutter_shop/provides/page_index_provide.dart';
 import 'package:flutter_shop/router/routers.dart';
 import 'package:flutter_shop/shop_app.dart';
 import 'package:provide/provide.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_shop/entities/home_page_entity.dart';
-import 'package:flutter_shop/provides/page_provide.dart';
+import 'package:flutter_shop/provides/page_index_provide.dart';
 import 'package:provide/provide.dart';
 
 class TopNavigatorBar extends StatelessWidget {
