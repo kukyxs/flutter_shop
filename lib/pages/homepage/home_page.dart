@@ -14,16 +14,36 @@ import 'package:flutter_shop/pages/homepage/mall_recommend.dart';
 import 'package:flutter_shop/pages/homepage/top_nativator.dart';
 import 'package:flutter_shop/provides/home_provide.dart';
 import 'package:provide/provide.dart';
+import 'package:amap_base/amap_base.dart';
 
 class HomePage extends StatelessWidget {
   final GlobalKey<EasyRefreshState> _refreshKey = GlobalKey();
   final GlobalKey<RefreshHeaderState> _headerKey = GlobalKey();
   final GlobalKey<RefreshFooterState> _footerKey = GlobalKey();
   final ScrollController _outController = ScrollController();
+  final _mapLocation = AMapLocation();
 
   @override
   Widget build(BuildContext context) {
-    Provide.value<HomeProvide>(context).initHomeEntity();
+    _mapLocation.init();
+
+    Permissions().requestPermission().then((granted) {
+      if (granted) {
+        _mapLocation
+            .getLocation(LocationClientOptions(
+          isOnceLocation: true,
+          isNeedAddress: true,
+          locatingWithReGeocode: true,
+        ))
+            .then((location) {
+          print('location:(${location.longitude}, ${location.latitude})');
+          Provide.value<HomeProvide>(context).initHomeEntity(location.longitude, location.latitude);
+        });
+      } else {
+        Provide.value<HomeProvide>(context).initHomeEntity(115.02932, 35.76189);
+      }
+    });
+
     Provide.value<HomeProvide>(context).initHotGoodsList();
 
     _outController.addListener(() {

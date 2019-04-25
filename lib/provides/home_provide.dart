@@ -18,8 +18,8 @@ class HomeProvide with ChangeNotifier {
 
   bool get showBack => _showBack;
 
-  initHomeEntity() async {
-    _homeEntity = await _getHomePageContent();
+  initHomeEntity(double lon, double lat) async {
+    _homeEntity = await _getHomePageContent(lon, lat);
     notifyListeners();
   }
 
@@ -43,8 +43,8 @@ class HomeProvide with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<HomePageEntity> _getHomePageContent() async {
-    var response = await request(servicePath['homePageContent'], formData: {'lon': '115.02932', 'lat': '35.76189'});
+  Future<HomePageEntity> _getHomePageContent(double lon, double lat) async {
+    var response = await request(servicePath['homePageContent'], formData: {'lon': /*'115.02932'*/ lon, 'lat': /*'35.76189'*/ lat });
     return HomePageEntity.fromJson(json.decode(response.data.toString()));
   }
 
