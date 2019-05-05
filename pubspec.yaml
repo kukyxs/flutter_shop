@@ -31,6 +31,7 @@ dependencies:
   flutter_html: ^0.9.6
   shared_preferences: ^0.5.2
   amap_base: ^0.3.5
+  jpush_flutter: ^0.0.11
 
 dev_dependencies:
   flutter_test:

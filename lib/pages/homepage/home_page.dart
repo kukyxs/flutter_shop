@@ -1,10 +1,13 @@
 import 'dart:ui';
 
+import 'package:amap_base/amap_base.dart';
+import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/ball_pulse_footer.dart';
 import 'package:flutter_easyrefresh/ball_pulse_header.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_shop/configs/application.dart';
 import 'package:flutter_shop/pages/homepage/ad_banner.dart';
 import 'package:flutter_shop/pages/homepage/banner_diy.dart';
 import 'package:flutter_shop/pages/homepage/floor_part.dart';
@@ -13,8 +16,8 @@ import 'package:flutter_shop/pages/homepage/lead_phone.dart';
 import 'package:flutter_shop/pages/homepage/mall_recommend.dart';
 import 'package:flutter_shop/pages/homepage/top_nativator.dart';
 import 'package:flutter_shop/provides/home_provide.dart';
+import 'package:flutter_shop/router/routers.dart';
 import 'package:provide/provide.dart';
-import 'package:amap_base/amap_base.dart';
 
 class HomePage extends StatelessWidget {
   final GlobalKey<EasyRefreshState> _refreshKey = GlobalKey();
@@ -36,8 +39,10 @@ class HomePage extends StatelessWidget {
           locatingWithReGeocode: true,
         ))
             .then((location) {
-          print('location:(${location.longitude}, ${location.latitude})');
-          Provide.value<HomeProvide>(context).initHomeEntity(location.longitude, location.latitude);
+          print('location:(${location.longitude}, ${location.latitude}), ${location.district}');
+          Provide.value<HomeProvide>(context)
+            ..initHomeEntity(location.longitude, location.latitude)
+            ..changeDistrict(location.district, location.longitude, location.latitude);
         });
       } else {
         Provide.value<HomeProvide>(context).initHomeEntity(115.02932, 35.76189);
@@ -54,7 +59,24 @@ class HomePage extends StatelessWidget {
       data: ThemeData(primarySwatch: Colors.pink, iconTheme: IconThemeData(color: Colors.pink)),
       child: Provide<HomeProvide>(
           builder: (_, widget, homeProvide) => Scaffold(
-                appBar: AppBar(title: Text('百姓生活+'), centerTitle: true),
+                appBar: AppBar(
+                  title: Text('百姓生活+'),
+                  centerTitle: true,
+                  leading: InkWell(
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Row(
+                        children: <Widget>[
+                          Icon(Icons.location_on, color: Colors.white, size: 12.0),
+                          Expanded(
+                            child: Text(homeProvide.district, style: TextStyle(fontSize: 12.0), overflow: TextOverflow.ellipsis, maxLines: 1),
+                          )
+                        ],
+                      ),
+                    ),
+                    onTap: () => Application.router.navigateTo(context, Routers.map, transition: TransitionType.fadeIn),
+                  ),
+                ),
                 body: homeProvide.homeEntity == null
                     ? Center(child: CupertinoActivityIndicator(radius: 12.0))
                     : EasyRefresh(

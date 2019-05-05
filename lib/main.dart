@@ -15,6 +15,7 @@ import 'package:provide/provide.dart';
 import 'provides/goods_detail_provide.dart';
 import 'provides/mall_goods_provide.dart';
 import 'provides/sub_category_provide.dart';
+import 'package:jpush_flutter/jpush_flutter.dart';
 
 void main() {
   final providers = Providers()
@@ -30,6 +31,10 @@ void main() {
   Routers.configureRouters(router);
   Application.router = router;
 
+  final JPush push = JPush();
+  Application.jPush = push;
+  setUpJPush(push);
+
   // 强制竖屏
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]).then((_) {
     runApp(ProviderNode(child: ShopApp(), providers: providers));
@@ -38,5 +43,20 @@ void main() {
     if (Platform.isAndroid) {
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.transparent));
     }
+  });
+}
+
+setUpJPush(JPush jPush) {
+  jPush.addEventHandler(onReceiveNotification: (Map<String, dynamic> message) async {
+    print("flutter onReceiveNotification: $message");
+  }, onOpenNotification: (Map<String, dynamic> message) async {
+    print("flutter onOpenNotification: $message");
+  }, onReceiveMessage: (Map<String, dynamic> message) async {
+    print("flutter onReceiveMessage: $message");
+  });
+
+  jPush.setup(appKey: '696247cca94724deaab1cae5', channel: 'shop_dev', production: false, debug: true);
+  jPush.getRegistrationID().then((rid) {
+    print('jpush rid: $rid');
   });
 }

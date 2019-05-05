@@ -11,12 +11,28 @@ class HomeProvide with ChangeNotifier {
   List<HotGoodsData> _hotGoodsList = []; // 火爆专区
   int _page = 0;
   bool _showBack = false;
+  String _district = '定位失败';
+  double _longitude = 115.02932;
+  double _latitude = 35.76189;
 
   HomePageEntity get homeEntity => _homeEntity;
 
   List<HotGoodsData> get hodGoodsList => _hotGoodsList;
 
   bool get showBack => _showBack;
+
+  String get district => _district;
+
+  double get longitude => _longitude;
+
+  double get latitude => _latitude;
+
+  changeDistrict(String value, double longitude, double latitude) {
+    _district = value;
+    _longitude = longitude;
+    _latitude = latitude;
+    notifyListeners();
+  }
 
   initHomeEntity(double lon, double lat) async {
     _homeEntity = await _getHomePageContent(lon, lat);

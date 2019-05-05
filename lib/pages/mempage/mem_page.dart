@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_shop/configs/application.dart';
 import 'package:flutter_shop/pages/mempage/mem_header.dart';
 import 'package:flutter_shop/pages/mempage/mem_tile.dart';
 import 'package:flutter_shop/pages/mempage/order_grid.dart';
+import 'package:flutter_shop/router/routers.dart';
 
 class MemPage extends StatelessWidget {
   @override
@@ -27,6 +29,8 @@ class MemPage extends StatelessWidget {
           MemTile(leading: Icons.phone, title: "客服电话", action: () {}),
           Divider(height: 2.0, color: Colors.black38),
           MemTile(leading: Icons.info_outline, title: "关于商城", action: () {}),
+          Container(height: 8.0, color: Colors.black12),
+          MemTile(leading: Icons.settings, title: "设置", action: () => Application.router.navigateTo(context, Routers.settings)),
         ],
       ),
     );

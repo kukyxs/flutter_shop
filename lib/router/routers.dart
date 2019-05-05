@@ -3,18 +3,24 @@ import 'package:fluro/fluro.dart';
 import 'handler.dart';
 
 class Routers {
-  static String _root = '/';
-  static String _details = '/details';
+  static String root = '/';
+  static String details = '/details';
+  static String map = '/map';
+  static String settings = '/settings';
 
   static void configureRouters(Router router) {
     router.notFoundHandler = Handler(handlerFunc: (_, params) {
       print('not found');
     });
 
-    router.define(_root, handler: rootHandler);
+    router.define(root, handler: rootHandler);
 
-    router.define(_details, handler: detailHandler);
+    router.define(details, handler: detailHandler);
+
+    router.define(map, handler: mapHandler);
+
+    router.define(settings, handler: settingHandler);
   }
 
-  static String generateDetailsRouterPath(String id) => '$_details?id=$id';
+  static String generateDetailsRouterPath(String id) => '$details?id=$id';
 }
